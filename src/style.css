@@ -1,0 +1,102 @@
+& {
+  --primary-500: #FFBA0A;
+  --primary-300: #E0A100;
+  --text-500: #FCFCFC;
+  --text-200: #CDD1DE;
+  --dark-500: #252627;
+  --dark-200: #18191a;
+  --font-family: Inter, system-ui, Avenir, Helvetica, Arial;
+
+}
+
+:root {
+  font-family: var(--font-family), sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: only dark;
+  color: var(--text-500);
+  background-color: var(--dark-500);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary-500);
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--primary-300);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button, input[type=submit] {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--dark-200);
+  cursor: pointer;
+  transition: border-color 250ms ease, transform 250ms ease;
+}
+button:hover, input[type=submit]:hover {
+  border-color: var(--primary-300);
+}
+button:active, input[type=submit]:active {
+  transform: scale(.98);
+}
+button:focus, input[type=submit]:focus,
+button:focus-visible, input[type=submit]:focus-visible {
+  outline: 2px solid var(--primary-300);
+}
+
+.page-container {
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+input {
+  &[type=text], &[type=password], &[type=search]  {
+    background: unset;
+    border: none;
+    outline: none;
+    font-weight: 600;
+    font-size: 1em;
+    padding: 0.6em;
+    border-bottom: solid 3px var(--text-200);
+    border-radius: 5px;
+    &:focus {
+      border-color: var(--primary-300);
+    }
+    &::placeholder {
+      color: var(--text-200);
+      font-weight: 200;
+      font-size: 1em;
+    }
+  }
+  transition: all 250ms ease;
+}
+#app {
+  width: 100%;
+  height: 100vh;
+}
+
