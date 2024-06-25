@@ -1,19 +1,31 @@
 <script>
 export default {
-  name: "Monitor_Page"
+  name: "Monitor_Page",
+  methods: {
+    computeName(name) {
+      if (name.substring(2,3) === "_" || name.substring(2,3) === " ")
+        return [name.substring(0, 2).toUpperCase(), name.substring(3)];
+      else
+        return [name.substring(0, 2).toUpperCase(), name.substring(2)];
+    },
+    computeBattery(level) {
+      const levels = ['battery_full_alt', 'battery_horiz_075', 'battery_horiz_050', 'battery_low', 'battery_horiz_000']
+      return levels[Math.round((1-level) * (levels.length-1))];
+    }
+  }
 }
 </script>
 
 <template>
 <div class="page-container">
   <div class="transmitters">
-    <div class="transmitter" v-for="i in 30">
-      <span>{{i.toString().padStart(2,'0')}}</span>
-      <h1>John Smith</h1>
-      <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 8"></span></div>
-      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 8"></span></div>
-      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 8"></span></div>
-      <div class="battery"><span class="material-symbols-outlined">battery_5_bar</span> 70%</div>
+    <div class="transmitter" v-for="transmitter in $root.$data.transmitters">
+      <span>{{computeName(transmitter.name)[0]}}</span>
+      <h1>{{computeName(transmitter.name)[1]}}</h1>
+      <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 8" :data-active="j <= (transmitter.lastMeterData.audioLevel * 8)"></span></div>
+      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 8" :data-active="j <= (transmitter.lastMeterData.rssiA * 6) || j===8"></span></div>
+      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 8" :data-active="j <= (transmitter.lastMeterData.rssiB * 6) || j===8"></span></div>
+      <div class="battery"><span class="material-symbols-outlined">{{computeBattery(transmitter.batteryLevel)}}</span></div>
     </div>
   </div>
 <!--  <div class="error-container">-->
@@ -33,7 +45,7 @@ export default {
   border: 2px solid var(--text-200);
   gap: 0.25em 0.5em;
   grid-template-areas:
-        "a b c"
+        "b b b"
         "a d c"
         "a e c"
         "f h c";
@@ -41,8 +53,9 @@ export default {
     font-size: 1em;
     margin: 0;
     line-height: 1.5em;
-    text-align: left;
+    text-align: center;
     grid-area: b;
+    border-bottom: 1px solid var(--text-200);
   }
   &>span:first-of-type {
     font-weight: bold;
@@ -51,6 +64,10 @@ export default {
   }
   &>.level:nth-of-type(1) {
     grid-area: d;
+    --bullet-colour: #51ff17;
+    &>.bullet:last-of-type {
+      --bullet-colour: #ff1717;
+    }
   }
   &>.level:nth-of-type(2) {
     grid-area: e;
@@ -58,18 +75,33 @@ export default {
   &>.level:nth-of-type(3) {
     grid-area: h;
   }
+  &>.level:nth-of-type(3), &>.level:nth-of-type(2) {
+    --bullet-colour: #ff5b17;
+    &>.bullet:last-of-type {
+      --bullet-colour: #173eff;
+    }
+  }
   &>.level {
     height: 1em;
-    margin-bottom: 0.5em;
     display: flex;
     gap: 0.25em;
     align-items: center;
+    &>.material-symbols-outlined {
+      font-size: 14pt;
+    }
     &>.bullet {
       display: block;
-      width: 12pt;
-      height: 12pt;
-      background-color: var(--primary-300);
+      width: 10pt;
+      height: 10pt;
+      background-color: var(--text-200);
       border-radius: 50%;
+
+      &[data-active=true] {
+        background-color: var(--bullet-colour);
+      }
+      &:nth-last-child(2) {
+        background-color: transparent
+      }
     }
   }
   &>.battery {
@@ -79,7 +111,7 @@ export default {
     font-size: 0.8em;
     justify-content: center;
     &>*{
-      font-size: 16px;
+      font-size: 28px;
     }
   }
   &>img {
@@ -96,10 +128,9 @@ export default {
 .transmitters {
   float: left;
   display: grid;
-  gap: 1em;
+  gap: 0.7em;
   grid-template-columns: auto auto auto auto auto;
   justify-content: space-evenly;
-  overflow: hidden;
 }
 @media screen and (width < 1500px) {
   .transmitters {
@@ -124,5 +155,6 @@ export default {
 .page-container {
   display: flex;
   gap: 1em;
+  justify-content: center;
 }
 </style>

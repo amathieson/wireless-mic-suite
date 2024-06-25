@@ -6,6 +6,7 @@
   --dark-500: #252627;
   --dark-200: #18191a;
   --font-family: Inter, system-ui, Avenir, Helvetica, Arial;
+  --bar-height: 36pt;
 
 }
 
@@ -22,6 +23,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: hidden;
 }
 
 a {
@@ -69,9 +71,11 @@ button:focus-visible, input[type=submit]:focus-visible {
 }
 
 .page-container {
-  margin: 0 auto;
-  padding: 2rem;
+  padding: 0 2rem;
   text-align: center;
+  max-height: calc(100vh - var(--bar-height) - 1em);
+  overflow-y: auto;
+  margin: calc(var(--bar-height) + 1em) auto 0;
 }
 
 input {
@@ -100,3 +104,30 @@ input {
   height: 100vh;
 }
 
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 250ms ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+
+@media screen and (width < 1024px) {
+  .narrow-only {
+    display: inherit;
+  }
+  .wide-only {
+    display: none !important;
+  }
+}
+@media screen and (width >= 1024px) {
+  .narrow-only {
+    display: none !important;
+  }
+  .wide-only {
+    display: inherit;
+  }
+}
