@@ -22,12 +22,13 @@ export default {
   data: ()=>{
     return {
       active_page:"Monitor_Page",
+      transmitterIndexes:{},
       transmitters:[
         {
           "lastMeterData": {
-            "rssiA": 0,
-            "rssiB": 0,
-            "audioLevel": 0
+            "RssiA": 0,
+            "RssiB": 0,
+            "AudioLevel": 0
           },
           "receiverID": 464268611,
           "uid": 1507441391,
@@ -40,34 +41,46 @@ export default {
           "channel": null,
           "transmitterType": "UNKNOWN",
           "batteryLevel": 0
-        },
-        {
-          "lastMeterData": {
-            "rssiA": 0.38,
-            "rssiB": 1,
-            "audioLevel": 0
-          },
-          "receiverID": 464268611,
-          "uid": 1507441392,
-          "name": "02_Steph",
-          "gain": 10,
-          "outputGain": 0,
-          "mute": false,
-          "frequency": 578500000,
-          "group": 2,
-          "channel": 0,
-          "transmitterType": "UR1",
-          "batteryLevel": 1
         }
-      ]
+      ],
+      socket: null
     }
   },
   mounted() {
-    // setInterval(()=>{
-    //   fetch("https://localhost:7221/getWirelessMics").then((response)=>{response.json().then((data)=>{
-    //     this.$data.transmitters = data;
-    //   })})
-    // }, 10)
+    this.fetchMics();
+    // setInterval(()=>{this.fetchMics();}, 10000)
+    // Create WebSocket connection.
+    this.$data.socket = new WebSocket("wss://localhost:7221/ws");
+
+// Connection opened
+    this.$data.socket.addEventListener("open", (event) => {    });
+
+// Listen for messages
+    this.$data.socket.addEventListener("message", (event) => {
+      const data = JSON.parse(event.data);
+      if (data.PropertyName)
+        console.log(data);
+      else{
+        data.forEach(element => {
+          this.$data.transmitters[this.$data.transmitterIndexes[element.UID]].lastMeterData
+          = element.MeteringData;
+        })
+      }
+    });
+
+  },
+  methods: {
+    fetchMics: function () {
+      fetch("https://localhost:7221/getWirelessMics").then((response) => {
+        response.json().then((data) => {
+          this.$data.transmitters = data;
+          for (const index in data) {
+            this.$data.transmitterIndexes[data[index].uid] = index;
+          }
+        });
+      });
+    }
   }
 }
+
 </script>

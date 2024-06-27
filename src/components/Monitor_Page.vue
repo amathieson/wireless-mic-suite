@@ -3,10 +3,7 @@ export default {
   name: "Monitor_Page",
   methods: {
     computeName(name) {
-      if (name.substring(2,3) === "_" || name.substring(2,3) === " ")
-        return [name.substring(0, 2).toUpperCase(), name.substring(3)];
-      else
-        return [name.substring(0, 2).toUpperCase(), name.substring(2)];
+        return [name.substring(0, 2).toUpperCase(), name];
     },
     computeBattery(level) {
       const levels = ['battery_full_alt', 'battery_horiz_075', 'battery_horiz_050', 'battery_low', 'battery_horiz_000']
@@ -22,9 +19,9 @@ export default {
     <div class="transmitter" v-for="transmitter in $root.$data.transmitters">
       <span>{{computeName(transmitter.name)[0]}}</span>
       <h1>{{computeName(transmitter.name)[1]}}</h1>
-      <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 8" :data-active="j <= (transmitter.lastMeterData.audioLevel * 8)"></span></div>
-      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 8" :data-active="j <= (transmitter.lastMeterData.rssiA * 6) || j===8"></span></div>
-      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 8" :data-active="j <= (transmitter.lastMeterData.rssiB * 6) || j===8"></span></div>
+      <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData.AudioLevel * 10)"></span></div>
+      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData.RssiA * 7) || j===10"></span></div>
+      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData.RssiB * 7) || j===10"></span></div>
       <div class="battery"><span class="material-symbols-outlined">{{computeBattery(transmitter.batteryLevel)}}</span></div>
     </div>
   </div>
@@ -77,6 +74,9 @@ export default {
   }
   &>.level:nth-of-type(3), &>.level:nth-of-type(2) {
     --bullet-colour: #ff5b17;
+    &>.bullet:nth-last-of-type(3) {
+      --bullet-colour: #ff1717;
+    }
     &>.bullet:last-of-type {
       --bullet-colour: #173eff;
     }
@@ -93,7 +93,7 @@ export default {
       display: block;
       width: 10pt;
       height: 10pt;
-      background-color: var(--text-200);
+      background-color: var(--dark-200);
       border-radius: 50%;
 
       &[data-active=true] {
