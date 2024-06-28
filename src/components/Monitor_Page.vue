@@ -16,7 +16,7 @@ export default {
 <template>
 <div class="page-container">
   <div class="transmitters">
-    <div class="transmitter" v-for="transmitter in $root.$data.transmitters">
+    <div class="transmitter" @click="$root.$data.config_active=true" v-for="transmitter in $root.$data.transmitters">
       <span>{{computeName(transmitter.name)[0]}}</span>
       <h1>{{computeName(transmitter.name)[1]}}</h1>
       <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData.AudioLevel * 10)"></span></div>

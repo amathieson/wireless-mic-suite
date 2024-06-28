@@ -3,10 +3,11 @@ import Monitor_Page from "./components/Monitor_Page.vue";
 import Navbar from "./Navbar.vue";
 import System_Page from "./components/System_Page.vue";
 import Coordination_Page from "./components/Coordination_Page.vue";
+import Device_Config from "./components/Device_Config.vue";
 </script>
 
 <template>
-  <Navbar :active_page="active_page" @navigate="args => active_page = args"/>
+  <Navbar @back="config_active = false" :back="config_active" :active_page="active_page" @navigate="args => active_page = args"/>
   <transition mode="out-in">
   <Monitor_Page v-if="active_page === 'Monitor_Page'"/>
   </transition>
@@ -16,11 +17,15 @@ import Coordination_Page from "./components/Coordination_Page.vue";
   <transition mode="out-in">
   <Coordination_Page v-if="active_page === 'Coordination_Page'"/>
   </transition>
+  <transition mode="out-in" name="slide-right">
+  <Device_Config :active="config_active"/>
+  </transition>
 </template>
 <script>
 export default {
   data: ()=>{
     return {
+      config_active: false,
       active_page:"Monitor_Page",
       transmitterIndexes:{},
       transmitters:[

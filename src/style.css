@@ -47,9 +47,18 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-
+button.primary {
+  background-color: var(--primary-500);
+  color: var(--dark-200);
+  font-weight: 600;
+}
+button:hover.primary {
+  border-color: var(--dark-200);
+}
+button:focus.primary,button:focus-visible.primary {
+  outline: 2px solid var(--dark-200);
+}
 button, input[type=submit] {
-  border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -58,6 +67,10 @@ button, input[type=submit] {
   background-color: var(--dark-200);
   cursor: pointer;
   transition: border-color 250ms ease, transform 250ms ease;
+  margin: 0.2em;
+  display: inline-flex;
+  align-items: center;
+  gap: 1em;
 }
 button:hover, input[type=submit]:hover {
   border-color: var(--primary-300);
@@ -87,7 +100,6 @@ input {
     font-size: 1em;
     padding: 0.6em;
     border-bottom: solid 3px var(--text-200);
-    border-radius: 5px;
     &:focus {
       border-color: var(--primary-300);
     }
@@ -102,16 +114,19 @@ input {
 #app {
   width: 100%;
   height: 100vh;
+  overflow-x: hidden;
 }
 
 .v-enter-active,
 .v-leave-active {
-  transition: opacity 250ms ease;
+  transition: opacity 250ms ease, top 250ms ease;
+  position: absolute;
 }
 
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+  top: -100%;
 }
 
 

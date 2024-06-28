@@ -1,6 +1,7 @@
 <template>
   <div class="nav-bar">
-    <img src="/GAOS-logo-light-small.png" alt="GAOS">
+    <img v-if="!$props.back" src="/GAOS-logo-light-small.png" alt="GAOS">
+    <a v-else href="#" @click="$emit('back')"><span class="material-symbols-outlined">arrow_back</span></a>
     <h1 class="narrow-only">Monitor</h1>
     <a class="wide-only" :data-active="$props.active_page==='Monitor_Page'" @click="$emit('navigate', 'Monitor_Page')"><span class="material-symbols-outlined">monitoring</span> Monitor</a>
     <a class="wide-only" :data-active="$props.active_page==='System_Page'" @click="$emit('navigate', 'System_Page')"><span class="material-symbols-outlined">dns</span> Wireless System</a>
@@ -53,8 +54,9 @@
 export default {
   name: 'Navbar',
   props: [
-    'active_page'
+    'active_page',
+      'back'
   ],
-  emits: ["navigate"]
+  emits: ["navigate", "back"]
 }
 </script>
