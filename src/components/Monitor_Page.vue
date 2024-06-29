@@ -3,7 +3,9 @@ export default {
   name: "Monitor_Page",
   methods: {
     computeName(name) {
+      if (name)
         return [name.substring(0, 2).toUpperCase(), name];
+      else return ["",""];
     },
     computeBattery(level) {
       const levels = ['battery_full_alt', 'battery_horiz_075', 'battery_horiz_050', 'battery_low', 'battery_horiz_000']
