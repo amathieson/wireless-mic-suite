@@ -28,26 +28,7 @@ export default {
       config_active: false,
       active_page:"Monitor_Page",
       transmitterIndexes:{},
-      transmitters:[
-        {
-          "lastMeterData": {
-            "RssiA": 0,
-            "RssiB": 0,
-            "AudioLevel": 0
-          },
-          "receiverID": 464268611,
-          "uid": 1507441391,
-          "name": "01_Rachel",
-          "gain": 10,
-          "outputGain": 0,
-          "mute": false,
-          "frequency": 610100000,
-          "group": null,
-          "channel": null,
-          "transmitterType": "UNKNOWN",
-          "batteryLevel": 0
-        }
-      ],
+      transmitters:[],
       socket: null
     }
   },

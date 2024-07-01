@@ -129,6 +129,20 @@ input {
   top: -100%;
 }
 
+.check-enter-active,
+.check-leave-active {
+  transition: clip-path 250ms ease;
+}
+
+.check-enter-from {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+}
+.check-leave-to {
+  clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+}
+.check-enter-to, .check-leave-from {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
 
 @media screen and (width < 1024px) {
   .narrow-only {
