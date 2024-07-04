@@ -1,28 +1,70 @@
 <script>
 export default {
   name: "Device_Config",
-  props: ["active"],
+  props: ["active", "device_type", "id"],
+  emits: ['close'],
+  data: ()=>{
+    return {
+      // device_type: "TRANSMITTER", // 'TRANSMITTER' || 'RECEIVER'
+      config: {},
+      brand: "",
+      model: "",
+      rxID: ""
+    }
+  },
+  watch: {
+    id: function (){
+      if (this.device_type === "TRANSMITTER"){
+        const txID = this.$root.$data.transmitterIndexes[this.id];
+        const txData = this.$root.$data.transmitters[txID];
+        const rxID = this.$root.$data.receiverIndexes[txData.receiverID];
+        const rxData = this.$root.$data.receivers[rxID];
+        this.brand = rxData.manufacturer;
+        this.model = txData.transmitterType;
+        this.config = txData;
+        this.rxID = txData.receiverID;
+      }
+    }
+  },
+  methods: {
+    identify: function () {
+      fetch(this.$root.$data._endpoint + '/identifyWirelessReceiver/' + this.rxID)
+    },
+    save: function () {
+      const params = ["name", "frequency", "group", "channel", "lockMode", "gain", "sensitivity", "outputGain", "mute"];
+      params.forEach(param => {
+        fetch(this.$root.$data._endpoint + `/setWirelessMic/${this.id}/${param}/${this.config[param]}`).then((response) => {
+          response.json().then((data)=>{if(!data.success){console.log(data)}});
+        })
+      })
+    }
+  }
 }
 </script>
 
 <template>
+  <div class="cover wide-only" @click="$emit('close')" :active="active"></div>
   <div class="container" :active="active">
-    <div class="header">
-      <div class="device-image">
-        <span class="material-symbols-outlined">dns</span>
+    <div class="header" v-if="config.name != null">
+      <div class="device-image" :style="device_type === 'RECEIVER' ? '' :
+      'background-image: url(\'device_images/' + brand.toUpperCase() + '_' + model.toUpperCase() + '.webp\')'">
+        <span v-if="device_type === 'RECEIVER'" class="material-symbols-outlined">dns</span>
+        <span v-if="model.toUpperCase() === 'UNKNOWN'" class="material-symbols-outlined">question_mark</span>
       </div>
       <div class="device-info">
-        <h1>Shure UR4D+ 01 John - 02 Jane</h1>
-        <code><span class="material-symbols-outlined">tag</span> 2085818421</code>
-        <code><span class="material-symbols-outlined">terminal</span> 1.171</code>
+        <h1>{{brand}} {{model}} {{config.name}}</h1>
+        <code><span class="material-symbols-outlined">tag</span> {{ id }}</code>
+        <code v-if="device_type === 'RECEIVER'"><span class="material-symbols-outlined">terminal</span> 1.171</code>
+        <code v-else><span class="material-symbols-outlined">dns</span> {{rxID}}</code>
       </div>
     </div>
-    <div class="buttons">
-      <button class="primary"><span class="material-symbols-outlined">save</span> Save Changes</button>
-      <button><span class="material-symbols-outlined">point_scan</span> Identify</button>
+    <div class="buttons" v-if="config.name != null">
+      <button @click="save" class="primary"><span class="material-symbols-outlined">save</span> <span>Save Changes</span></button>
+      <button @click="identify"><span class="material-symbols-outlined">point_scan</span> <span>Identify</span></button>
+      <button v-if="device_type === 'RECEIVER'"><span class="material-symbols-outlined">restart_alt</span> <span>Reboot</span></button>
     </div>
-    <div class="config">
-      <section>
+    <div class="config" v-if="config.name != null">
+      <section v-if="device_type === 'RECEIVER'">
         <h2><span class="material-symbols-outlined">router</span> Network</h2>
         <ul class="inputs">
           <li>
@@ -44,11 +86,81 @@ export default {
           </li>
         </ul>
       </section>
+      <section v-if="device_type === 'TRANSMITTER'">
+        <h2><span class="material-symbols-outlined">mic</span> Transmitter</h2>
+        <ul class="inputs">
+          <li>
+            <label for="txname">Name</label>
+            <input v-model="config.name" placeholder="John Doe" type="text" id="txname">
+          </li>
+          <li>
+            <label for="freq">Frequency</label>
+            <span><input v-model="config.frequency" placeholder="000.000" type="text" id="freq"> MHz</span>
+          </li>
+          <li>
+            <label for="group">Group</label>
+            <input v-model="config.group" placeholder="1" type="text" id="group">
+          </li>
+          <li>
+            <label for="chan">Channel</label>
+            <input v-model="config.channel" placeholder="1" type="text" id="chan">
+          </li>
+          <li>
+            <label for="lock">Lock</label>
+            <select v-model="config.lockMode">
+              <option>None</option>
+              <option>Mute</option>
+              <option>Power</option>
+              <option>Frequency</option>
+              <option>FrequencyPower</option>
+              <option>All</option>
+            </select>
+          </li>
+        </ul>
+      </section>
+      <section v-if="device_type === 'TRANSMITTER'">
+        <h2><span class="material-symbols-outlined">equalizer</span> Gain</h2>
+        <ul class="inputs">
+          <li>
+            <label for="gain">Input Gain</label>
+            <span><input v-model="config.gain" placeholder="0" type="text" id="gain"> db</span>
+          </li>
+          <li>
+            <label for="sens">Sensitivity</label>
+            <span><input v-model="config.sensitivity" placeholder="0" type="text" id="sens"> db</span>
+          </li>
+          <li>
+            <label for="outgain">Output Gain</label>
+            <span><input v-model="config.outputGain" placeholder="0" type="text" id="outgain"> db</span>
+          </li>
+          <li>
+            <label for="mute">Mute
+              <input v-model="config.mute" type="checkbox" class="switch" id="mute" checked><label for="mute">Mute</label>
+            </label>
+          </li>
+        </ul>
+      </section>
     </div>
   </div>
 </template>
 
 <style scoped>
+.cover[active='false'] {
+  opacity: 0;
+  pointer-events: none;
+}
+.cover {
+  position: absolute;
+  left: 0;
+  top: var(--bar-height);
+  width: 100%;
+  height: calc(100% - var(--bar-height));
+  background: black;
+  opacity: 0.4;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 0.3s;
+}
 .device-image {
   width: 10em;
   height: 10em;
@@ -90,6 +202,7 @@ export default {
   padding: 0.5em 2em;
   box-shadow: #18191a 0 0 10px 10px;
   transition: right 500ms ease;
+  overflow-y: auto;
 }
 .header {
   display: flex;
@@ -188,6 +301,15 @@ label{
     width: 1.3em;
   }
 }
+label > label {
+  user-select: none;
+}
+li > span {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
 @media screen and (width < 1024px) {
   .container {
     position: absolute;
@@ -200,6 +322,12 @@ label{
   }
   .container[active='false'] {
     right: -100%;
+  }
+  button>span {
+    display: none;
+  }
+  button>span.material-symbols-outlined {
+    display: unset;
   }
 }
 </style>

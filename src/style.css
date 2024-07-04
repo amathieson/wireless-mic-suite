@@ -111,6 +111,27 @@ input {
   }
   transition: all 250ms ease;
 }
+select {
+    background: var(--dark-500);
+    border: none;
+    outline: none;
+    font-weight: 600;
+    font-size: 1em;
+    padding: 0.6em;
+    border-bottom: solid 3px var(--text-200);
+  appearance: none;
+
+    &:focus {
+      border-color: var(--primary-300);
+    }
+    &::placeholder {
+      color: var(--text-200);
+      font-weight: 200;
+      font-size: 1em;
+    }
+  transition: all 250ms ease;
+
+}
 #app {
   width: 100%;
   height: 100vh;
