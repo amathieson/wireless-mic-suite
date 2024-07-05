@@ -20,9 +20,17 @@ export default {
         const rxID = this.$root.$data.receiverIndexes[txData.receiverID];
         const rxData = this.$root.$data.receivers[rxID];
         this.brand = rxData.manufacturer;
-        this.model = txData.transmitterType;
-        this.config = txData;
+        this.model = txData.transmitterType?? 'UNKNOWN';
+        this.config = Object.assign({}, txData);
         this.rxID = txData.receiverID;
+      } else if (this.device_type === "RECEIVER"){
+        const rxID = this.$root.$data.receiverIndexes[this.id];
+        const rxData = this.$root.$data.receivers[rxID];
+        this.brand = rxData.manufacturer;
+        this.model = rxData.modelName;
+        this.config = Object.assign({}, rxData);
+        this.config.name = "";
+        this.rxID = this.id;
       }
     }
   },
@@ -33,8 +41,17 @@ export default {
     save: function () {
       const params = ["name", "frequency", "group", "channel", "lockMode", "gain", "sensitivity", "outputGain", "mute"];
       params.forEach(param => {
-        fetch(this.$root.$data._endpoint + `/setWirelessMic/${this.id}/${param}/${this.config[param]}`).then((response) => {
-          response.json().then((data)=>{if(!data.success){console.log(data)}});
+        let val = this.config[param];
+        if (param === 'mute') {
+          val = (this.config[param]? 1 : 0)
+        }
+        fetch(this.$root.$data._endpoint + `/setWirelessMic/${this.id}/${param}/${val}`).then((response) => {
+          response.json().then((data)=>{
+                if(!data.success){console.log(data)}
+                else
+                  this.$emit('close');
+              }
+          );
         })
       })
     }
@@ -53,9 +70,9 @@ export default {
       </div>
       <div class="device-info">
         <h1>{{brand}} {{model}} {{config.name}}</h1>
-        <code><span class="material-symbols-outlined">tag</span> {{ id }}</code>
-        <code v-if="device_type === 'RECEIVER'"><span class="material-symbols-outlined">terminal</span> 1.171</code>
-        <code v-else><span class="material-symbols-outlined">dns</span> {{rxID}}</code>
+        <code><span class="material-symbols-outlined">tag</span> {{ parseInt(id).toString(16) }}</code>
+        <code v-if="device_type === 'RECEIVER'"><span class="material-symbols-outlined">terminal</span> {{config.firmwareVersion}}</code>
+        <code v-else><span class="material-symbols-outlined">dns</span> {{parseInt(rxID).toString(16)}}</code>
       </div>
     </div>
     <div class="buttons" v-if="config.name != null">
@@ -69,20 +86,20 @@ export default {
         <ul class="inputs">
           <li>
             <label for="DHCP">DHCP
-              <input type="checkbox" class="switch" id="DHCP" checked><label for="DHCP">DHCP</label>
+              <input v-model="config.ipMode" type="checkbox" class="switch" id="DHCP" checked><label for="DHCP">DHCP</label>
             </label>
           </li>
           <li>
             <label for="ipaddr">IP Address</label>
-            <input placeholder="0.0.0.0" type="text" id="ipaddr">
+            <input v-model="config.ipAddress" placeholder="0.0.0.0" type="text" id="ipaddr">
           </li>
           <li>
             <label for="subnet">Subnet Address</label>
-            <input placeholder="0.0.0.0" type="text" id="subnet">
+            <input v-model="config.subnet" placeholder="0.0.0.0" type="text" id="subnet">
           </li>
           <li>
             <label for="gateway">Gateway Address</label>
-            <input placeholder="0.0.0.0" type="text" id="gateway">
+            <input v-model="config.gateway" placeholder="0.0.0.0" type="text" id="gateway">
           </li>
         </ul>
       </section>
@@ -94,6 +111,21 @@ export default {
             <input v-model="config.name" placeholder="John Doe" type="text" id="txname">
           </li>
           <li>
+            <label for="lock">Lock</label>
+            <select v-model="config.lockMode">
+              <option>None</option>
+              <option>Power</option>
+              <option>Frequency</option>
+              <option>FrequencyPower</option>
+              <option>All</option>
+            </select>
+          </li>
+        </ul>
+      </section>
+      <section v-if="device_type === 'TRANSMITTER'">
+        <h2><span class="material-symbols-outlined">settings_input_antenna</span> Radio</h2>
+        <ul class="inputs">
+          <li>
             <label for="freq">Frequency</label>
             <span><input v-model="config.frequency" placeholder="000.000" type="text" id="freq"> MHz</span>
           </li>
@@ -104,17 +136,6 @@ export default {
           <li>
             <label for="chan">Channel</label>
             <input v-model="config.channel" placeholder="1" type="text" id="chan">
-          </li>
-          <li>
-            <label for="lock">Lock</label>
-            <select v-model="config.lockMode">
-              <option>None</option>
-              <option>Mute</option>
-              <option>Power</option>
-              <option>Frequency</option>
-              <option>FrequencyPower</option>
-              <option>All</option>
-            </select>
           </li>
         </ul>
       </section>

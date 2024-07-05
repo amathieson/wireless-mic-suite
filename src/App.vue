@@ -12,7 +12,7 @@ import Device_Config from "./components/Device_Config.vue";
   <Monitor_Page v-if="active_page === 'Monitor_Page'" @config="config"/>
   </transition>
   <transition mode="out-in">
-  <System_Page v-if="active_page === 'System_Page'"/>
+  <System_Page ref="coord" v-if="active_page === 'System_Page'" @config="config"/>
   </transition>
   <transition mode="out-in">
   <Coordination_Page v-if="active_page === 'Coordination_Page'"/>
@@ -32,7 +32,7 @@ export default {
       transmitters:[],
       socket: null,
       receivers: [],
-      receiverIndexes: [],
+      receiverIndexes: {},
       device_type: null,
       device_uid: "",
     }
@@ -55,11 +55,17 @@ export default {
           this.$data.transmitters[this.$data.transmitterIndexes[data.uid]] = {};
         }
         this.$data.transmitters[this.$data.transmitterIndexes[data.uid]][data.propertyName] = data.value;
+        if (this.$refs.coord)
+          this.$refs.coord.updateNetwork();
       }
       else{
         data.forEach(element => {
-          this.$data.transmitters[this.$data.transmitterIndexes[element.UID]].lastMeterData
-          = element.MeteringData;
+          if (this.$data.transmitterIndexes[element.uid])
+            this.$data.transmitters[this.$data.transmitterIndexes[element.uid]].lastMeterData
+            = element.meteringData;
+          else {
+            console.log("Unknown Transmitter: ", element.uid);
+          }
         })
       }
     });
@@ -78,6 +84,8 @@ export default {
           for (const index in data) {
             this.$data.transmitterIndexes[data[index].uid] = index;
           }
+          if (this.$refs.coord)
+            this.$refs.coord.updateNetwork();
         });
       });
     },
@@ -86,8 +94,10 @@ export default {
         response.json().then((data) => {
           this.$data.receivers = data;
           for (const index in data) {
-            this.$data.receiverIndexes[data[index].uid] = index;
+              this.$data.receiverIndexes[data[index].uid] = index;
           }
+          if (this.$refs.coord)
+            this.$refs.coord.updateNetwork();
         });
       });
     }

@@ -21,12 +21,12 @@ export default {
   <div class="transmitters">
     <div class="transmitter" v-for="transmitter in $root.$data.transmitters"
          @click="$emit('config', 'TRANSMITTER', transmitter.uid);"
-         :class="{'online':transmitter.transmitterType!=='UNKNOWN'}">
+         :class="{'online':transmitter.transmitterType!=='UNKNOWN' && transmitter.transmitterType!==null}">
       <span>{{computeName(transmitter.name)[0]}}</span>
       <h1>{{computeName(transmitter.name)[1]}}</h1>
-      <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.AudioLevel * 10)"></span></div>
-      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.RssiA * 7) || (j===10 && (transmitter.lastMeterData?.Diversity & 1) === 1)"></span></div>
-      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.RssiB * 7) || (j===10 && (transmitter.lastMeterData?.Diversity & 2) === 2)"></span></div>
+      <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.audioLevel * 10)"></span></div>
+      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.rssiA * 7) || (j===10 && (transmitter.lastMeterData?.diversity & 1) === 1)"></span></div>
+      <div class="level RF"><span class="material-symbols-outlined">signal_cellular_alt</span> <span class="bullet" v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.rssiB * 7) || (j===10 && (transmitter.lastMeterData?.diversity & 2) === 2)"></span></div>
       <div class="battery"><span class="material-symbols-outlined">{{computeBattery(transmitter.batteryLevel)}}</span></div>
     </div>
   </div>

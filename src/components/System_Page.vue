@@ -1,50 +1,83 @@
 <script>
 export default {
-  name: "System_Page"
+  name: "System_Page",
+  data: ()=>{
+    return {
+      network: {}
+    }
+  },
+  emits: ['config'],
+  mounted() {
+    this.updateNetwork();
+  },
+  methods: {
+    updateNetwork(){
+      let network = {};
+
+      this.$root.$data.receivers.forEach((rx) => {
+        const key = rx.modelName + rx.manufacturer + rx.freqBand;
+        if (network[key] === undefined) {
+          network[key] = {
+            modelName: rx.modelName,
+            manufacturer: rx.manufacturer,
+            freqBand: rx.freqBand,
+            receivers:[]
+          }
+        }
+        let transmitters = [];
+        rx.wirelessMicIDs.forEach((tx)=>{
+          let txData = this.$root.$data.transmitters[this.$root.$data.transmitterIndexes[tx]]
+          transmitters.push({
+            name: txData.name,
+            type: txData.transmitterType,
+            uid: txData.uid,
+            frequency: txData.frequency
+          })
+        })
+        network[key].receivers.push({
+          uid: rx.uid,
+          name: transmitters.map((e)=>e.name).join(' - '),
+          transmitters
+        });
+      })
+
+      this.network = network;
+    }
+  }
 }
 </script>
 
 <template>
 <div class="page-container">
-    <details open>
-      <summary class="category">Shure UR4D J5E</summary>
-        <details>
-          <summary class="receiver">01 John - 02 Jane</summary>
+    <details open v-for="node in network">
+      <summary class="category">{{node.manufacturer}} {{node.modelName}} {{node.freqBand}}</summary>
+        <details v-for="receiver in node.receivers">
+          <summary class="receiver">{{receiver.name}}<button @click="$emit('config', 'RECEIVER', receiver.uid);"><span class="material-symbols-outlined">settings</span></button></summary>
           <ul>
-            <li class="transmitter">Shure UR1 - 01 John <code>600.000 MHz</code></li>
-            <li class="transmitter">Shure UR1 - 02 Jane <code>600.000 MHz</code></li>
-          </ul>
-        </details>
-        <details>
-          <summary class="receiver">03 Alex - 04 Smith</summary>
-          <ul>
-            <li class="transmitter">Shure UR1 - 03 Alex <code>600.000 MHz</code></li>
-            <li class="transmitter">Shure UR1 - 04 Smith <code>600.000 MHz</code></li>
+            <li v-for="transmitter in receiver.transmitters" class="transmitter">{{ transmitter.type }} - {{transmitter.name}} <code>{{((transmitter.frequency)/1000000).toFixed(3)}} MHz</code><button @click="$emit('config', 'TRANSMITTER', transmitter.uid);"><span class="material-symbols-outlined">settings</span></button></li>
           </ul>
         </details>
     </details>
-    <details open>
-      <summary class="category">Sennheiser EW-DX EM 2 Q</summary>
-        <details>
-          <summary class="receiver">31 John - 32 Jane</summary>
-          <ul>
-            <li class="transmitter">Sennheiser EW-DX SK - 31 John <code>600.000 MHz</code></li>
-            <li class="transmitter">Sennheiser EW-DX SK - 32 Jane <code>600.000 MHz</code></li>
-          </ul>
-        </details>
-        <details>
-          <summary class="receiver">33 Alex - 34 Smith</summary>
-          <ul>
-            <li class="transmitter">Sennheiser EW-DX SK - 33 Alex <code>600.000 MHz</code></li>
-            <li class="transmitter">Sennheiser EW-DX SK - 34 Smith <code>600.000 MHz</code></li>
-          </ul>
-        </details>
-    </details>
-<!--  </ul>-->
 </div>
 </template>
 
 <style scoped>
+button {
+  background: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  margin: 0 0 0 auto;
+
+  &>* {
+    display: block;
+    font-size: 24px;
+  }
+
+}
 .page-container {
   display: block;
   text-align: left;
@@ -58,8 +91,9 @@ summary {
   display: flex;
   gap: 0.5em;
   cursor: pointer;
+  align-items: center;
 }
-summary:hover, .transmitter:hover {
+summary:hover {
   background: var(--dark-200);
 }
 .receiver {
@@ -70,10 +104,10 @@ summary:hover, .transmitter:hover {
   display: flex;
   padding: 0.5em 1em;
   border-bottom: 2px solid var(--text-200);
-  cursor: pointer;
   gap: 0.5em;
   background: var(--dark-500);
   transition: background 250ms ease;
+  align-items: center;
 }
 .transmitter > code {
   align-self: center;
@@ -102,6 +136,6 @@ summary::before, .transmitter::before {
   content: 'mic' !important;
 }
 ul {
-  margin: 0.5em 1em;
+  margin: 0.5em 0 0.5em 1em;
 }
 </style>
