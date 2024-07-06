@@ -39,20 +39,36 @@ export default {
       fetch(this.$root.$data._endpoint + '/identifyWirelessReceiver/' + this.rxID)
     },
     save: function () {
-      const params = ["name", "frequency", "group", "channel", "lockMode", "gain", "sensitivity", "outputGain", "mute"];
+      const params = ["name", "frequency", "group", "channel", "lockMode", "gain", "sensitivity", "outputGain", "mute",
+        "ipMode","ipAddress","subnet","gateway"];
       params.forEach(param => {
         let val = this.config[param];
         if (param === 'mute') {
           val = (this.config[param]? 1 : 0)
         }
-        fetch(this.$root.$data._endpoint + `/setWirelessMic/${this.id}/${param}/${val}`).then((response) => {
-          response.json().then((data)=>{
-                if(!data.success){console.log(data)}
-                else
-                  this.$emit('close');
-              }
-          );
-        })
+        if (param === 'ipMode') {
+          val = (this.config[param]? 'DHCP' : 'Manual')
+        }
+        if (this.device_type === "TRANSMITTER"){
+          fetch(this.$root.$data._endpoint + `/setWirelessMic/${this.id}/${param}/${val}`).then((response) => {
+            response.json().then((data)=>{
+                  if(!data.success){console.log(data)}
+                  else
+                    this.$emit('close');
+                }
+            );
+          })
+        }
+        if (this.device_type === "RECEIVER"){
+          fetch(this.$root.$data._endpoint + `/setWirelessMicReceiver/${this.id}/${param}/${val}`).then((response) => {
+            response.json().then((data)=>{
+                  if(!data.success){console.log(data)}
+                  else
+                    this.$emit('close');
+                }
+            );
+          })
+        }
       })
     }
   }
