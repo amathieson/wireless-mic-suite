@@ -327,7 +327,7 @@ export default {
       </ul>
     </div>
   </div>
-  <dialog open>
+  <dialog>
     <h1>Frequency Scan</h1>
     <sub>Please select receivers to perform scan with.</sub>
     <ul>
