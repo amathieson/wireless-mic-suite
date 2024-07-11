@@ -39,7 +39,8 @@ export default {
       fetch(this.$root.$data._endpoint + '/identifyWirelessReceiver/' + this.rxID)
     },
     reboot: function () {
-      fetch(this.$root.$data._endpoint + '/rebootWirelessReceiver/' + this.rxID)
+      if (confirm("Are you sure you want to reboot this device?"))
+        fetch(this.$root.$data._endpoint + '/rebootWirelessReceiver/' + this.rxID)
     },
     save: function () {
       const params = ["name", "frequency", "group", "channel", "lockMode", "gain", "sensitivity", "outputGain", "mute",
