@@ -38,6 +38,9 @@ export default {
     identify: function () {
       fetch(this.$root.$data._endpoint + '/identifyWirelessReceiver/' + this.rxID)
     },
+    reboot: function () {
+      fetch(this.$root.$data._endpoint + '/rebootWirelessReceiver/' + this.rxID)
+    },
     save: function () {
       const params = ["name", "frequency", "group", "channel", "lockMode", "gain", "sensitivity", "outputGain", "mute",
         "ipMode","ipAddress","subnet","gateway"];
@@ -94,7 +97,7 @@ export default {
     <div class="buttons" v-if="config.name != null">
       <button @click="save" class="primary"><span class="material-symbols-outlined">save</span> <span>Save Changes</span></button>
       <button @click="identify"><span class="material-symbols-outlined">point_scan</span> <span>Identify</span></button>
-      <button v-if="device_type === 'RECEIVER'"><span class="material-symbols-outlined">restart_alt</span> <span>Reboot</span></button>
+      <button v-if="device_type === 'RECEIVER'" @click="reboot"><span class="material-symbols-outlined">restart_alt</span> <span>Reboot</span></button>
     </div>
     <div class="config" v-if="config.name != null">
       <section v-if="device_type === 'RECEIVER'">
