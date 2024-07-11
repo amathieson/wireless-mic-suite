@@ -175,7 +175,8 @@ export default {
       frequencyScan: [],
       lowestFreq: 999_999_999_999_999,
       highestFreq: 0,
-      usedReceivers: []
+      usedReceivers: [],
+      fleetIDs: []
     }
   },
   methods: {
@@ -206,6 +207,8 @@ export default {
       });
       this.lowestFreq = Math.min(this.lowestFreq, meta_data.frequency)
       this.highestFreq = Math.max(this.highestFreq, meta_data.frequency)
+      if (uid !== '')
+        this.fleetIDs.push(uid)
 
       this.render_chart();
     },
@@ -286,15 +289,15 @@ export default {
 <template>
 <div class="page-container">
   <canvas ref="spectrum"></canvas>
-  <button @click="fetch_scan(0)"><span class="material-symbols-outlined">bug_report</span>TEST Scan Frequencies</button>
-  <button @click=""><span class="material-symbols-outlined">radar</span> Scan Frequencies</button>
-  <button @click=""><span class="material-symbols-outlined">pin</span> Calculate Frequencies</button>
+  <button @click="$refs.scanner.showModal()"><span class="material-symbols-outlined">radar</span> Scan Frequencies</button>
+  <button @click="" :class="fleet.length === 0 ? 'disabled' : ''"><span class="material-symbols-outlined">pin</span> Calculate Frequencies</button>
   <button @click=""><span class="material-symbols-outlined">deployed_code_update</span> Deploy Changes</button>
   <div class="lower-zone">
     <div class="fleet">
       <h2><span class="material-symbols-outlined">dns</span> Wireless Fleet</h2>
       <ul>
         <li v-for="transmitter in fleet" :data-id="transmitter.uid" :class="transmitter.locked?'lock':'lock_open'">
+          <a href="#" @click="fleet = fleet.filter((el)=>{return el!==transmitter});render_chart()"><span class="material-symbols-outlined">close</span></a>
           <a href="#" @click="transmitter.locked = !transmitter.locked"><span class="material-symbols-outlined">{{transmitter.locked?'lock':'lock_open'}}</span></a>
           <a href="#"  v-if="!transmitter.managed"><span class="material-symbols-outlined">warning</span></a>
           <input type="text" v-model="transmitter.name" placeholder="Transmitter Name">
@@ -327,7 +330,8 @@ export default {
       </ul>
     </div>
   </div>
-  <dialog>
+  <dialog ref="scanner">
+    <a class="close" @click="$refs.scanner.close()"><span class="material-symbols-outlined">close</span></a>
     <h1>Frequency Scan</h1>
     <sub>Please select receivers to perform scan with.</sub>
     <ul>
@@ -478,5 +482,14 @@ ul {
     grid-column: 2/3;
   }
 }
-
+.close {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  cursor: pointer;
+}
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
 </style>
