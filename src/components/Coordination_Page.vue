@@ -175,11 +175,46 @@ export default {
       frequencyScan: [],
       lowestFreq: 999_999_999_999_999,
       highestFreq: 0,
-      usedReceivers: [],
-      fleetIDs: []
+      fleetIDs: [],
+      dialogue_page: 0,
+      scan: {
+        usedReceivers: [],
+        mode: "",
+        min_freq: 999_999_999_999_999,
+        max_freq: 0,
+        usedReceiversIDs: [],
+        range_start: 0,
+        range_end: 999_999_999_999_999,
+        range_step: 25000,
+        loading: false,
+      }
     }
   },
   methods: {
+    update_scan_params: function () {
+      let ids = [];
+      let min_freq = 999_999_999_999_999;
+      let max_freq = 0;
+      for (const k in this.scan.usedReceivers) {
+        const v = this.scan.usedReceivers[k];
+        if (v) {
+          ids.push(k);
+          min_freq = Math.min(min_freq,this.get_receiver(this.$root.$data.transmitters[this.$root.$data.transmitterIndexes[k]])
+              .frequencyRanges[0].startFrequency);
+          max_freq = Math.max(max_freq,this.get_receiver(this.$root.$data.transmitters[this.$root.$data.transmitterIndexes[k]])
+              .frequencyRanges[0].endFrequency);
+        }
+      }
+
+      this.scan.usedReceiversIDs = ids;
+      this.scan.max_freq = max_freq;
+      this.scan.min_freq = min_freq;
+      this.scan.range_start = Math.min(Math.max(this.scan.range_start, min_freq), max_freq)
+      this.scan.range_end = Math.max(Math.min(this.scan.range_end, max_freq), min_freq)
+    },
+    get_receiver: function (transmitter) {
+      return this.$root.$data.receivers[this.$root.$data.receiverIndexes[transmitter.receiverID]]
+    },
     fetch_scan: function (i) {
       fetch("https://localhost:7221/rfScan/777995160" + (i === 0 ? "?minFreq=578000000&maxFreq=638000000&stepSize=25000" : "")).then(
           (response) => {response.json().then((data) => {
@@ -281,6 +316,25 @@ export default {
         },
         plugins: [lineMarkerText]
       })
+    },
+    start_scan: function () {
+      this.scan.loading = true
+      let scanners = [
+        // {id: 0, start: 0, end: 0}
+      ];
+      switch (this.scan.mode) {
+        case "speed":
+          // Spread all receivers to cover the least possible range each
+              break;
+        case "quality":
+          // Spread all receivers to overlap the most possible
+              break;
+      }
+      this.frequencyScan = [];
+      for (let scanner of scanners) {
+       fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id +
+           `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`)
+      }
     }
   }
 }
@@ -289,7 +343,7 @@ export default {
 <template>
 <div class="page-container">
   <canvas ref="spectrum"></canvas>
-  <button @click="$refs.scanner.showModal()"><span class="material-symbols-outlined">radar</span> Scan Frequencies</button>
+  <button @click="dialogue_page=0;$refs.scanner.showModal();"><span class="material-symbols-outlined">radar</span> Scan Frequencies</button>
   <button @click="" :class="fleet.length === 0 ? 'disabled' : ''"><span class="material-symbols-outlined">pin</span> Calculate Frequencies</button>
   <button @click=""><span class="material-symbols-outlined">deployed_code_update</span> Deploy Changes</button>
   <div class="lower-zone">
@@ -333,19 +387,59 @@ export default {
   <dialog ref="scanner">
     <a class="close" @click="$refs.scanner.close()"><span class="material-symbols-outlined">close</span></a>
     <h1>Frequency Scan</h1>
-    <sub>Please select receivers to perform scan with.</sub>
-    <ul>
-      <li v-for="i in 30" @click="usedReceivers[i] = !usedReceivers[i]" class="inventory-item freq-item">
-        <div>
-        <transition name="check">
-          <span v-if="!usedReceivers[i]" class="material-symbols-outlined">check_box_outline_blank</span>
-          <span v-else class="material-symbols-outlined">check_box</span>
-        </transition>
-        </div>
-        <div>{{i.toString().padStart(2, '0')}} John</div>
-        <div>Shure UR4D J5E</div>
-      </li>
-    </ul>
+    <div v-if="dialogue_page===0">
+      <sub>Please select receivers to perform scan with.</sub>
+      <ul class="receiver-list">
+        <li v-for="transmitter in $root.$data.transmitters" @click="scan.usedReceivers[transmitter.uid] = !scan.usedReceivers[transmitter.uid]; update_scan_params()" class="inventory-item freq-item">
+          <div>
+          <transition name="check">
+            <span v-if="!scan.usedReceivers[transmitter.uid]" class="material-symbols-outlined">check_box_outline_blank</span>
+            <span v-else class="material-symbols-outlined">check_box</span>
+          </transition>
+          </div>
+          <div>{{transmitter.name}}</div>
+          <div>{{get_receiver(transmitter).manufacturer}} {{get_receiver(transmitter).modelName}} {{get_receiver(transmitter).freqBand}}</div>
+        </li>
+      </ul>
+    </div>
+    <div v-if="dialogue_page===1">
+      <sub>Scan Parameters</sub>
+      <div>
+        <label for="startFreq">Start Frequency</label>
+        <input v-model="scan.range_start" id="startFreq" type="number" :min="scan.min_freq" :max="scan.max_freq" :step="scan.range_step">
+      </div>
+      <div>
+        <label for="endFreq">End Frequency</label>
+        <input v-model="scan.range_end" id="endFreq" type="number" :min="scan.min_freq" :max="scan.max_freq" :step="scan.range_step">
+      </div>
+      <div>
+        <label for="stepSize">Step Size</label>
+        <input v-model="scan.range_step" id="stepSize" type="number">
+      </div>
+      <div>
+        <label for="endFreq">Optimisation</label>
+        <select v-model="scan.mode">
+          <option selected value="speed">Scan Speed</option>
+          <option value="quality">Scan Quality</option>
+        </select>
+      </div>
+    </div>
+    <div v-if="dialogue_page===2">
+      <div v-if="scan.loading" class="loader">
+        <span class="material-symbols-outlined">radar</span>
+        <h3>Scanning...</h3>
+      </div>
+      <div v-else>
+        <ul>
+          <li>{{scan.usedReceiversIDs.length}} receiver(s)</li>
+          <li>Range: {{scan.range_start}}-{{scan.range_end}}</li>
+          <li>Step Size: {{scan.range_step}}</li>
+          <li>Optimisation: {{scan.mode}}</li>
+        </ul>
+      </div>
+    </div>
+    <button v-if="dialogue_page === 2 && !scan.loading" @click="start_scan">Start Scan <span class="material-symbols-outlined">radar</span></button>
+    <button v-if="dialogue_page < 2" @click="dialogue_page++">Continue <span class="material-symbols-outlined">arrow_right_alt</span></button>
   </dialog>
 </div>
 </template>
@@ -355,7 +449,8 @@ dialog {
   position: absolute;
   top: 10vh;
   max-height: 70vh;
-  overflow-y: scroll;
+  min-height: 50vh;
+  overflow-y: auto;
   width: 40vw;
 }
 canvas {
@@ -480,6 +575,11 @@ ul {
   &>div {
     text-align: left;
     grid-column: 2/3;
+    &:last-of-type {
+      align-self: end;
+      opacity: 0.6;
+      font-size: 0.9em;
+    }
   }
 }
 .close {
@@ -491,5 +591,50 @@ ul {
 .disabled {
   pointer-events: none;
   opacity: 0.6;
+}
+.receiver-list {
+  max-height: min(calc(36pt * 8), 30vh);
+  overflow-y: auto;
+}
+dialog > div {
+  margin-bottom: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  text-align: left;
+  &>sub{
+    text-align: center;
+  }
+  &>div:has(input), &>div:has(select){
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    margin: 0.5em 0;
+  }
+}
+.loader {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 30vh;
+  justify-content: center;
+  overflow: hidden;
+  max-height: 30vh;
+  &>.material-symbols-outlined {
+    font-size: 36pt;
+    color: var(--primary-500);
+    animation: spin 1.5s infinite linear;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

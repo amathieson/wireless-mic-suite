@@ -93,7 +93,7 @@ button:focus-visible, input[type=submit]:focus-visible {
 }
 
 input {
-  &[type=text], &[type=password], &[type=search]  {
+  &[type=text], &[type=password], &[type=search], &[type=number]  {
     background: unset;
     border: none;
     outline: none;

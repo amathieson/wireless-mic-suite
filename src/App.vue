@@ -40,7 +40,7 @@ export default {
   mounted() {
     this.fetchMics();
     this.fetchReceivers();
-    // setInterval(()=>{this.fetchMics();}, 10000)
+    setInterval(()=>{this.fetchMics();}, 15000)
     // Create WebSocket connection.
     this.$data.socket = new WebSocket("wss://localhost:7221/ws");
 
