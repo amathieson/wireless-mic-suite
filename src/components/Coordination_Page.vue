@@ -187,6 +187,7 @@ export default {
         range_end: 999_999_999_999_999,
         range_step: 25000,
         loading: false,
+        receiversByTX: []
       }
     }
   },
@@ -195,18 +196,19 @@ export default {
       let ids = [];
       let min_freq = 999_999_999_999_999;
       let max_freq = 0;
+      let receivers = [];
       for (const k in this.scan.usedReceivers) {
         const v = this.scan.usedReceivers[k];
         if (v) {
           ids.push(k);
-          min_freq = Math.min(min_freq,this.get_receiver(this.$root.$data.transmitters[this.$root.$data.transmitterIndexes[k]])
-              .frequencyRanges[0].startFrequency);
-          max_freq = Math.max(max_freq,this.get_receiver(this.$root.$data.transmitters[this.$root.$data.transmitterIndexes[k]])
-              .frequencyRanges[0].endFrequency);
+          receivers[k] = this.get_receiver(this.$root.$data.transmitters[this.$root.$data.transmitterIndexes[k]]);
+          min_freq = Math.min(min_freq, receivers[k].frequencyRanges[0].startFrequency);
+          max_freq = Math.max(max_freq, receivers[k].frequencyRanges[0].endFrequency);
         }
       }
 
       this.scan.usedReceiversIDs = ids;
+      this.scan.receiversByTX = receivers;
       this.scan.max_freq = max_freq;
       this.scan.min_freq = min_freq;
       this.scan.range_start = Math.min(Math.max(this.scan.range_start, min_freq), max_freq)
@@ -324,6 +326,38 @@ export default {
       ];
       switch (this.scan.mode) {
         case "speed":
+          let current_freq = this.scan.range_start;
+          const end_freq = this.scan.range_end;
+          while (current_freq < this.scan.range_end) {
+            let overlapping_receivers = [];
+            for (const receiver of this.scan.usedReceiversIDs) {
+              let r_start = this.scan.receiversByTX[receiver].frequencyRanges[0].startFrequency
+              let r_end  = this.scan.receiversByTX[receiver].frequencyRanges[0].endFrequency
+              if (r_start <= current_freq <= r_end)
+                overlapping_receivers.push({start: r_start, end: r_end, receiver})
+            }
+
+            if (overlapping_receivers.length === 0)
+              break;
+
+            const num_receivers = overlapping_receivers.length;
+            const range_end = Math.min(end_freq, overlapping_receivers.reduce((a, b) => Math.min(a,b), 999_999_999_999_999));
+            const range_length = range_end - current_freq + this.scan.range_step;
+            const range_per_receiver = Math.floor(range_length / num_receivers);
+            for (let j = 0; j < num_receivers; j++) {
+              let scan_end;
+              if (j === num_receivers - 1)
+                scan_end = range_end;
+              else
+                scan_end = current_freq + range_per_receiver - this.scan.range_step;
+
+              scanners.append({id: overlapping_receivers[j], start: current_freq, end: scan_end})
+              current_freq = scan_end + this.scan.range_step
+              if (current_freq > range_end)
+                break
+
+            }
+          }
           // Spread all receivers to cover the least possible range each
               break;
         case "quality":
