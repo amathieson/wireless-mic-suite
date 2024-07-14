@@ -1,19 +1,19 @@
 <script>
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  LineController,
   BarController,
-    Filler,
-    ScatterController,
-    LogarithmicScale
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  LogarithmicScale,
+  PointElement,
+  ScatterController,
+  Title,
+  Tooltip
 } from 'chart.js'
+
 ChartJS.register(
     LinearScale,
     PointElement,
@@ -35,7 +35,7 @@ const lineMarkerText = {
     const RAD = Math.PI / 180;
     chart.data.mics.forEach((element, index) => {
       element.x = element.frequency;
-      let trans_type = catalogue.find((el)=>el.id===element.type);
+      let trans_type = catalogue.find((el) => el.id === element.type);
       ctx.beginPath();
       ctx.strokeStyle = 'red';
       ctx.lineWidth = x.getPixelForValue(element.x + 250_000) - x.getPixelForValue(element.x);
@@ -48,118 +48,118 @@ const lineMarkerText = {
       ctx.rotate(270 * RAD);
       ctx.textAlign = 'center';
       ctx.fillStyle = 'white';
-      ctx.fillText(element.name, 0,0);
+      ctx.fillText(element.name, 0, 0);
       ctx.rotate(-270 * RAD);
       ctx.translate(-x.getPixelForValue(element.x), -(height / 2 + top));
     })
   }
 }
-const formatter = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 2 });
+const formatter = new Intl.NumberFormat('en-GB', {minimumFractionDigits: 2});
 const catalogue = [
   {
-    "name":"Shure UR1/UR2 J5E",
+    "name": "Shure UR1/UR2 J5E",
     "ranges": [
-      [578_000_000,638_000_000]
+      [578_000_000, 638_000_000]
     ],
-    "bandwidth":25_000,
-    "id":"SHURE_J5E"
+    "bandwidth": 25_000,
+    "id": "SHURE_J5E"
   },
   {
-    "name":"Sennheiser EW-DX Q1-9",
+    "name": "Sennheiser EW-DX Q1-9",
     "ranges": [
-      [470_200_000,550_000_000]
+      [470_200_000, 550_000_000]
     ],
-    "bandwidth":200_000,
-    "id":"SENNHEISER_EW_Q"
+    "bandwidth": 200_000,
+    "id": "SENNHEISER_EW_Q"
   },
   {
-    "name":"Sennheiser EW100 G3 A",
+    "name": "Sennheiser EW100 G3 A",
     "ranges": [
-      [516_000_000,558_000_000]
+      [516_000_000, 558_000_000]
     ],
-    "bandwidth":42_000_000,
-    "id":"SENNHEISER_EW_G3_A"
+    "bandwidth": 42_000_000,
+    "id": "SENNHEISER_EW_G3_A"
   },
   {
-    "name":"Sennheiser EW100 G3 B",
+    "name": "Sennheiser EW100 G3 B",
     "ranges": [
-      [626_000_000,668_000_000]
+      [626_000_000, 668_000_000]
     ],
-    "bandwidth":42_000_000,
-    "id":"SENNHEISER_EW_G3_B"
+    "bandwidth": 42_000_000,
+    "id": "SENNHEISER_EW_G3_B"
   },
   {
-    "name":"Sennheiser EW100 G3 G",
+    "name": "Sennheiser EW100 G3 G",
     "ranges": [
-      [566_000_000,608_000_000]
+      [566_000_000, 608_000_000]
     ],
-    "bandwidth":42_000_000,
-    "id":"SENNHEISER_EW_G3_G"
+    "bandwidth": 42_000_000,
+    "id": "SENNHEISER_EW_G3_G"
   },
   {
-    "name":"Sennheiser XSW A",
+    "name": "Sennheiser XSW A",
     "ranges": [
-      [548_000_000,572_000_000]
+      [548_000_000, 572_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_A"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_A"
   },
   {
-    "name":"Sennheiser XSW GB",
+    "name": "Sennheiser XSW GB",
     "ranges": [
-      [606_000_000,630_000_000]
+      [606_000_000, 630_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_GB"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_GB"
   },
   {
-    "name":"Sennheiser XSW B",
+    "name": "Sennheiser XSW B",
     "ranges": [
-      [614_000_000,638_000_000]
+      [614_000_000, 638_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_B"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_B"
   },
   {
-    "name":"Sennheiser XSW BC",
+    "name": "Sennheiser XSW BC",
     "ranges": [
-      [670_000_000,694_000_000]
+      [670_000_000, 694_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_BC"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_BC"
   },
   {
-    "name":"Sennheiser XSW C",
+    "name": "Sennheiser XSW C",
     "ranges": [
-      [766_000_000,790_000_000]
+      [766_000_000, 790_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_C"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_C"
   },
   {
-    "name":"Sennheiser XSW D",
+    "name": "Sennheiser XSW D",
     "ranges": [
-      [794_000_000,806_000_000]
+      [794_000_000, 806_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_D"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_D"
   },
   {
-    "name":"Sennheiser XSW E",
+    "name": "Sennheiser XSW E",
     "ranges": [
-      [821_000_000,832_000_000],
-      [863_000_000,865_000_000]
+      [821_000_000, 832_000_000],
+      [863_000_000, 865_000_000]
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_E"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_E"
   },
   {
-    "name":"Sennheiser XSW K",
+    "name": "Sennheiser XSW K",
     "ranges": [
-      [925_000_000,937_500_000],
+      [925_000_000, 937_500_000],
     ],
-    "bandwidth":24_000_000,
-    "id":"SENNHEISER_XSW_K"
+    "bandwidth": 24_000_000,
+    "id": "SENNHEISER_XSW_K"
   }
 ];
 export default {
@@ -167,7 +167,7 @@ export default {
   mounted() {
 
   },
-  data: ()=>{
+  data: () => {
     return {
       chart: null,
       catalogue: catalogue,
@@ -219,18 +219,22 @@ export default {
     },
     fetch_scan: function (i) {
       fetch("https://localhost:7221/rfScan/777995160" + (i === 0 ? "?minFreq=578000000&maxFreq=638000000&stepSize=25000" : "")).then(
-          (response) => {response.json().then((data) => {
-            if (data.samples.length < 1 && i < 100)
-              setTimeout(()=>{this.fetch_scan(i+1)}, 1000);
-            else {
-              this.frequencyScan = data.samples.map((a) => {
-                this.lowestFreq = Math.min(this.lowestFreq, a.frequency)
-                this.highestFreq = Math.max(this.highestFreq, a.frequency)
-                return {x: a.frequency, y: Math.pow(10, (a.strength / 10))}
-              });
-              this.render_chart();
-            }
-          })}
+          (response) => {
+            response.json().then((data) => {
+              if (data.samples.length < 1 && i < 100)
+                setTimeout(() => {
+                  this.fetch_scan(i + 1)
+                }, 1000);
+              else {
+                this.frequencyScan = data.samples.map((a) => {
+                  this.lowestFreq = Math.min(this.lowestFreq, a.frequency)
+                  this.highestFreq = Math.max(this.highestFreq, a.frequency)
+                  return {x: a.frequency, y: Math.pow(10, (a.strength / 10))}
+                });
+                this.render_chart();
+              }
+            })
+          }
       )
     },
     add_to_fleet: function (uid, meta_data) {
@@ -262,7 +266,7 @@ export default {
               label: 'Frequency Scan',
               data: this.frequencyScan,
               fill: {
-                target:{value:Math.pow(10, (-110 / 10))},
+                target: {value: Math.pow(10, (-110 / 10))},
                 above: "#E0A100"
               },
 
@@ -294,9 +298,9 @@ export default {
               min: this.lowestFreq,
               ticks: {
                 color: '#CDD1DE',
-                callback: function(value, index, values) {
+                callback: function (value, index, values) {
                   // Convert the logarithmic value back to dBm for display
-                  return formatter.format(value/1_000_000) + ' MHz';
+                  return formatter.format(value / 1_000_000) + ' MHz';
                 },
               },
               grid: {
@@ -321,53 +325,76 @@ export default {
     },
     start_scan: function () {
       this.scan.loading = true
-      let scanners = [
-        // {id: 0, start: 0, end: 0}
-      ];
-      switch (this.scan.mode) {
-        case "speed":
-          let current_freq = this.scan.range_start;
-          const end_freq = this.scan.range_end;
-          while (current_freq < this.scan.range_end) {
-            let overlapping_receivers = [];
-            for (const receiver of this.scan.usedReceiversIDs) {
-              let r_start = this.scan.receiversByTX[receiver].frequencyRanges[0].startFrequency
-              let r_end  = this.scan.receiversByTX[receiver].frequencyRanges[0].endFrequency
-              if (r_start <= current_freq <= r_end)
-                overlapping_receivers.push({start: r_start, end: r_end, receiver})
-            }
+      let scanners = [];
+      this.scan.usedReceiversIDs.sort((a, b) => {
+        return this.scan.receiversByTX[a].frequencyRanges[0].startFrequency -
+            this.scan.receiversByTX[b].frequencyRanges[0].startFrequency
+      });
 
-            if (overlapping_receivers.length === 0)
+      let current_freq = this.scan.range_start;
+      const end_freq = this.scan.range_end;
+      let usedRX = [];
+
+      while (current_freq < this.scan.range_end) {
+        let overlapping_receivers = [];
+        for (const receiver of this.scan.usedReceiversIDs) {
+          let r_start = this.scan.receiversByTX[receiver].frequencyRanges[0].startFrequency
+          let r_end = this.scan.receiversByTX[receiver].frequencyRanges[0].endFrequency
+          if (r_start <= current_freq && current_freq <= r_end)
+            overlapping_receivers.push({start: r_start, end: r_end, receiver})
+        }
+
+        if (overlapping_receivers.length === 0) {
+          const last_freq = current_freq;
+          for (const receiver of this.scan.usedReceiversIDs) {
+            if (usedRX.indexOf(receiver) === -1) {
+              current_freq = this.scan.receiversByTX[receiver].frequencyRanges[0].startFrequency;
               break;
-
-            const num_receivers = overlapping_receivers.length;
-            const range_end = Math.min(end_freq, overlapping_receivers.reduce((a, b) => Math.min(a,b), 999_999_999_999_999));
-            const range_length = range_end - current_freq + this.scan.range_step;
-            const range_per_receiver = Math.floor(range_length / num_receivers);
-            for (let j = 0; j < num_receivers; j++) {
-              let scan_end;
-              if (j === num_receivers - 1)
-                scan_end = range_end;
-              else
-                scan_end = current_freq + range_per_receiver - this.scan.range_step;
-
-              scanners.append({id: overlapping_receivers[j], start: current_freq, end: scan_end})
-              current_freq = scan_end + this.scan.range_step
-              if (current_freq > range_end)
-                break
-
             }
           }
-          // Spread all receivers to cover the least possible range each
-              break;
-        case "quality":
-          // Spread all receivers to overlap the most possible
-              break;
+          if (current_freq !== last_freq)
+            continue;
+          else
+            break;
+        }
+        const num_receivers = overlapping_receivers.length;
+        const lowest_end_freq = overlapping_receivers.reduce((a, b) => Math.min(a, b.end), 999_999_999_999_999);
+        const range_end = Math.min(end_freq, lowest_end_freq);
+        if (this.scan.mode === "speed") {// Spread all receivers to cover the least possible range each
+          const range_length = range_end - current_freq + this.scan.range_step;
+          const range_per_receiver = Math.floor(range_length / num_receivers);
+          for (let j = 0; j < num_receivers; j++) {
+            let scan_end;
+            if (j === num_receivers - 1)
+              scan_end = range_end;
+            else
+              scan_end = current_freq + range_per_receiver - this.scan.range_step;
+
+            usedRX.push(overlapping_receivers[j].receiver);
+            scanners.push({
+              id: overlapping_receivers[j].receiver, start: current_freq, end: scan_end,
+              width: scan_end - current_freq
+            })
+            current_freq = scan_end + this.scan.range_step
+            if (current_freq > range_end)
+              break
+
+          }
+        } else if (this.scan.mode === "quality") {// Spread all receivers to overlap the most possible
+          for (let j = 0; j < num_receivers; j++) {
+            usedRX.push(overlapping_receivers[j].receiver);
+            scanners.push({
+              id: overlapping_receivers[j].receiver, start: current_freq, end: range_end,
+              width: range_end - current_freq
+            })
+          }
+          current_freq = range_end + this.scan.range_step
+        }
       }
       this.frequencyScan = [];
       for (let scanner of scanners) {
-       fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id +
-           `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`)
+        fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id +
+            `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`)
       }
     }
   }
@@ -375,107 +402,123 @@ export default {
 </script>
 
 <template>
-<div class="page-container">
-  <canvas ref="spectrum"></canvas>
-  <button @click="dialogue_page=0;$refs.scanner.showModal();"><span class="material-symbols-outlined">radar</span> Scan Frequencies</button>
-  <button @click="" :class="fleet.length === 0 ? 'disabled' : ''"><span class="material-symbols-outlined">pin</span> Calculate Frequencies</button>
-  <button @click=""><span class="material-symbols-outlined">deployed_code_update</span> Deploy Changes</button>
-  <div class="lower-zone">
-    <div class="fleet">
-      <h2><span class="material-symbols-outlined">dns</span> Wireless Fleet</h2>
-      <ul>
-        <li v-for="transmitter in fleet" :data-id="transmitter.uid" :class="transmitter.locked?'lock':'lock_open'">
-          <a href="#" @click="fleet = fleet.filter((el)=>{return el!==transmitter});render_chart()"><span class="material-symbols-outlined">close</span></a>
-          <a href="#" @click="transmitter.locked = !transmitter.locked"><span class="material-symbols-outlined">{{transmitter.locked?'lock':'lock_open'}}</span></a>
-          <a href="#"  v-if="!transmitter.managed"><span class="material-symbols-outlined">warning</span></a>
-          <input type="text" v-model="transmitter.name" placeholder="Transmitter Name">
-          <input type="text" v-model="transmitter.frequency" placeholder="000.00 MHz">
-        </li>
-      </ul>
-    </div>
-    <div class="network">
-      <h2><span class="material-symbols-outlined">lan</span>Network Devices</h2>
-      <ul>
-        <li v-for="transmitter in $root.$data.transmitters"
-            @click="add_to_fleet(transmitter.uid, {name:transmitter.name, type: 'SHURE_J5E', frequency: transmitter.frequency})"
-            class="inventory-item">
-          <a href="#"><span class="material-symbols-outlined">add</span></a>
-          {{ transmitter.name }} <code>{{transmitter.frequency / 1000000}} MHz</code>
-        </li>
-      </ul>
-    </div>
-    <div class="catalogue">
-      <h2><span class="material-symbols-outlined">book_5</span>Device Catalogue</h2>
-      <ul>
-        <li class="inventory-item">
-          <a href="#"><span class="material-symbols-outlined">add</span></a>
-          Custom Device
-        </li>
-        <li v-for="i in catalogue" @click="add_to_fleet('', {name:i.name, type: i.id, frequency: i.ranges[0][0]})" class="inventory-item">
-          <a href="#"><span class="material-symbols-outlined">add</span></a>
-          {{i.name}}
-        </li>
-      </ul>
-    </div>
-  </div>
-  <dialog ref="scanner">
-    <a class="close" @click="$refs.scanner.close()"><span class="material-symbols-outlined">close</span></a>
-    <h1>Frequency Scan</h1>
-    <div v-if="dialogue_page===0">
-      <sub>Please select receivers to perform scan with.</sub>
-      <ul class="receiver-list">
-        <li v-for="transmitter in $root.$data.transmitters" @click="scan.usedReceivers[transmitter.uid] = !scan.usedReceivers[transmitter.uid]; update_scan_params()" class="inventory-item freq-item">
-          <div>
-          <transition name="check">
-            <span v-if="!scan.usedReceivers[transmitter.uid]" class="material-symbols-outlined">check_box_outline_blank</span>
-            <span v-else class="material-symbols-outlined">check_box</span>
-          </transition>
-          </div>
-          <div>{{transmitter.name}}</div>
-          <div>{{get_receiver(transmitter).manufacturer}} {{get_receiver(transmitter).modelName}} {{get_receiver(transmitter).freqBand}}</div>
-        </li>
-      </ul>
-    </div>
-    <div v-if="dialogue_page===1">
-      <sub>Scan Parameters</sub>
-      <div>
-        <label for="startFreq">Start Frequency</label>
-        <input v-model="scan.range_start" id="startFreq" type="number" :min="scan.min_freq" :max="scan.max_freq" :step="scan.range_step">
-      </div>
-      <div>
-        <label for="endFreq">End Frequency</label>
-        <input v-model="scan.range_end" id="endFreq" type="number" :min="scan.min_freq" :max="scan.max_freq" :step="scan.range_step">
-      </div>
-      <div>
-        <label for="stepSize">Step Size</label>
-        <input v-model="scan.range_step" id="stepSize" type="number">
-      </div>
-      <div>
-        <label for="endFreq">Optimisation</label>
-        <select v-model="scan.mode">
-          <option selected value="speed">Scan Speed</option>
-          <option value="quality">Scan Quality</option>
-        </select>
-      </div>
-    </div>
-    <div v-if="dialogue_page===2">
-      <div v-if="scan.loading" class="loader">
-        <span class="material-symbols-outlined">radar</span>
-        <h3>Scanning...</h3>
-      </div>
-      <div v-else>
+  <div class="page-container">
+    <canvas ref="spectrum"></canvas>
+    <button @click="dialogue_page=0;$refs.scanner.showModal();"><span class="material-symbols-outlined">radar</span>
+      Scan Frequencies
+    </button>
+    <button :class="fleet.length === 0 ? 'disabled' : ''" @click=""><span class="material-symbols-outlined">pin</span>
+      Calculate Frequencies
+    </button>
+    <button @click=""><span class="material-symbols-outlined">deployed_code_update</span> Deploy Changes</button>
+    <div class="lower-zone">
+      <div class="fleet">
+        <h2><span class="material-symbols-outlined">dns</span> Wireless Fleet</h2>
         <ul>
-          <li>{{scan.usedReceiversIDs.length}} receiver(s)</li>
-          <li>Range: {{scan.range_start}}-{{scan.range_end}}</li>
-          <li>Step Size: {{scan.range_step}}</li>
-          <li>Optimisation: {{scan.mode}}</li>
+          <li v-for="transmitter in fleet" :class="transmitter.locked?'lock':'lock_open'" :data-id="transmitter.uid">
+            <a href="#" @click="fleet = fleet.filter((el)=>{return el!==transmitter});render_chart()"><span
+                class="material-symbols-outlined">close</span></a>
+            <a href="#" @click="transmitter.locked = !transmitter.locked"><span
+                class="material-symbols-outlined">{{ transmitter.locked ? 'lock' : 'lock_open' }}</span></a>
+            <a v-if="!transmitter.managed" href="#"><span class="material-symbols-outlined">warning</span></a>
+            <input v-model="transmitter.name" placeholder="Transmitter Name" type="text">
+            <input v-model="transmitter.frequency" placeholder="000.00 MHz" type="text">
+          </li>
+        </ul>
+      </div>
+      <div class="network">
+        <h2><span class="material-symbols-outlined">lan</span>Network Devices</h2>
+        <ul>
+          <li v-for="transmitter in $root.$data.transmitters"
+              class="inventory-item"
+              @click="add_to_fleet(transmitter.uid, {name:transmitter.name, type: 'SHURE_J5E', frequency: transmitter.frequency})">
+            <a href="#"><span class="material-symbols-outlined">add</span></a>
+            {{ transmitter.name }} <code>{{ transmitter.frequency / 1000000 }} MHz</code>
+          </li>
+        </ul>
+      </div>
+      <div class="catalogue">
+        <h2><span class="material-symbols-outlined">book_5</span>Device Catalogue</h2>
+        <ul>
+          <li class="inventory-item">
+            <a href="#"><span class="material-symbols-outlined">add</span></a>
+            Custom Device
+          </li>
+          <li v-for="i in catalogue" class="inventory-item"
+              @click="add_to_fleet('', {name:i.name, type: i.id, frequency: i.ranges[0][0]})">
+            <a href="#"><span class="material-symbols-outlined">add</span></a>
+            {{ i.name }}
+          </li>
         </ul>
       </div>
     </div>
-    <button v-if="dialogue_page === 2 && !scan.loading" @click="start_scan">Start Scan <span class="material-symbols-outlined">radar</span></button>
-    <button v-if="dialogue_page < 2" @click="dialogue_page++">Continue <span class="material-symbols-outlined">arrow_right_alt</span></button>
-  </dialog>
-</div>
+    <dialog ref="scanner">
+      <a class="close" @click="$refs.scanner.close()"><span class="material-symbols-outlined">close</span></a>
+      <h1>Frequency Scan</h1>
+      <div v-if="dialogue_page===0">
+        <sub>Please select receivers to perform scan with.</sub>
+        <ul class="receiver-list">
+          <li v-for="transmitter in $root.$data.transmitters"
+              class="inventory-item freq-item"
+              @click="scan.usedReceivers[transmitter.uid] = !scan.usedReceivers[transmitter.uid]; update_scan_params()">
+            <div>
+              <transition name="check">
+                <span v-if="!scan.usedReceivers[transmitter.uid]" class="material-symbols-outlined">check_box_outline_blank</span>
+                <span v-else class="material-symbols-outlined">check_box</span>
+              </transition>
+            </div>
+            <div>{{ transmitter.name }}</div>
+            <div>{{ get_receiver(transmitter).manufacturer }} {{ get_receiver(transmitter).modelName }}
+              {{ get_receiver(transmitter).freqBand }}
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div v-if="dialogue_page===1">
+        <sub>Scan Parameters</sub>
+        <div>
+          <label for="startFreq">Start Frequency</label>
+          <input id="startFreq" v-model="scan.range_start" :max="scan.max_freq" :min="scan.min_freq"
+                 :step="scan.range_step"
+                 type="number">
+        </div>
+        <div>
+          <label for="endFreq">End Frequency</label>
+          <input id="endFreq" v-model="scan.range_end" :max="scan.max_freq" :min="scan.min_freq" :step="scan.range_step"
+                 type="number">
+        </div>
+        <div>
+          <label for="stepSize">Step Size</label>
+          <input id="stepSize" v-model="scan.range_step" type="number">
+        </div>
+        <div>
+          <label for="endFreq">Optimisation</label>
+          <select v-model="scan.mode">
+            <option selected value="speed">Scan Speed</option>
+            <option value="quality">Scan Quality</option>
+          </select>
+        </div>
+      </div>
+      <div v-if="dialogue_page===2">
+        <div v-if="scan.loading" class="loader">
+          <span class="material-symbols-outlined">radar</span>
+          <h3>Scanning...</h3>
+        </div>
+        <div v-else>
+          <ul>
+            <li>{{ scan.usedReceiversIDs.length }} receiver(s)</li>
+            <li>Range: {{ scan.range_start }}-{{ scan.range_end }}</li>
+            <li>Step Size: {{ scan.range_step }}</li>
+            <li>Optimisation: {{ scan.mode }}</li>
+          </ul>
+        </div>
+      </div>
+      <button v-if="dialogue_page === 2 && !scan.loading" @click="start_scan">Start Scan <span
+          class="material-symbols-outlined">radar</span></button>
+      <button v-if="dialogue_page < 2" @click="dialogue_page++">Continue <span class="material-symbols-outlined">arrow_right_alt</span>
+      </button>
+    </dialog>
+  </div>
 </template>
 
 <style scoped>
@@ -487,10 +530,12 @@ dialog {
   overflow-y: auto;
   width: 40vw;
 }
+
 canvas {
   width: 100%;
   max-height: 20em;
 }
+
 .lower-zone {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -498,45 +543,54 @@ canvas {
   grid-template-areas: "a b" "a c";
   max-height: calc(100vh - var(--bar-height) - 27em);
   text-align: left;
-  gap: 0.5em ;
+  gap: 0.5em;
   margin-top: 1em;
-  &>* {
+
+  & > * {
     border: var(--text-200) 2px solid;
     border-radius: 0.8em;
     padding: 1em;
     overflow: hidden;
-    &>ul {
+
+    & > ul {
       overflow-y: auto;
     }
-    &>h2 {
+
+    & > h2 {
       text-align: left;
       font-size: medium;
       display: inline-flex;
       margin: 0;
       gap: 0.5em;
-      &>span {
+
+      & > span {
         color: var(--primary-500);
       }
     }
   }
 }
+
 .fleet {
   grid-area: a;
 }
+
 .network {
   grid-area: b;
   overflow: hidden;
 }
+
 .catalogue {
   grid-area: c;
   overflow: hidden;
 }
+
 ul {
   margin: 0;
   height: calc(100% - 1.5em);
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 .inventory-item {
   list-style: none;
   display: flex;
@@ -545,38 +599,49 @@ ul {
   margin: 0.25em 0;
   cursor: pointer;
   border-bottom: var(--text-200) 1px solid;
-  &>a {
+
+  & > a {
     align-self: center;
   }
+
   & > a > .material-symbols-outlined {
     color: var(--text-200);
   }
+
   transition: background-color 250ms ease, transform 250ms ease;
 }
+
 .inventory-item:last-of-type {
   border-bottom: none;
 }
+
 .inventory-item:hover {
   background-color: var(--dark-200);
 }
+
 .inventory-item:active {
   transform: scale(0.99);
 }
+
 .fleet > ul {
   list-style: none;
-  &>li {
+
+  & > li {
     display: flex;
     gap: 0.5em;
     align-items: baseline;
     transition: opacity 250ms ease, filter 250ms ease;
+
     &.lock {
       opacity: .7;
       filter: grayscale(1);
-      &>input {
+
+      & > input {
         pointer-events: none;
       }
     }
-    &>a {
+
+    & > a {
       align-self: center;
     }
   }
@@ -590,14 +655,16 @@ ul {
   gap: 0;
   align-items: center;
   transform: scale(1) !important;
-  &>div:first-of-type {
+
+  & > div:first-of-type {
     grid-column: 1/2;
     grid-row: 1/3;
     position: relative;
     width: 30pt;
     height: 30pt;
     justify-self: center;
-    &>span {
+
+    & > span {
       position: absolute;
       top: 0;
       left: 0;
@@ -606,9 +673,11 @@ ul {
       font-size: 30pt;
     }
   }
-  &>div {
+
+  & > div {
     text-align: left;
     grid-column: 2/3;
+
     &:last-of-type {
       align-self: end;
       opacity: 0.6;
@@ -616,35 +685,42 @@ ul {
     }
   }
 }
+
 .close {
   position: absolute;
   top: 1em;
   right: 1em;
   cursor: pointer;
 }
+
 .disabled {
   pointer-events: none;
   opacity: 0.6;
 }
+
 .receiver-list {
   max-height: min(calc(36pt * 8), 30vh);
   overflow-y: auto;
 }
+
 dialog > div {
   margin-bottom: 1em;
   display: flex;
   flex-direction: column;
   justify-content: start;
   text-align: left;
-  &>sub{
+
+  & > sub {
     text-align: center;
   }
-  &>div:has(input), &>div:has(select){
+
+  & > div:has(input), & > div:has(select) {
     display: grid;
     grid-template-columns: 1fr 4fr;
     margin: 0.5em 0;
   }
 }
+
 .loader {
   text-align: center;
   display: flex;
@@ -653,7 +729,8 @@ dialog > div {
   justify-content: center;
   overflow: hidden;
   max-height: 30vh;
-  &>.material-symbols-outlined {
+
+  & > .material-symbols-outlined {
     font-size: 36pt;
     color: var(--primary-500);
     animation: spin 1.5s infinite linear;
