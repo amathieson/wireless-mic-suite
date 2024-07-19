@@ -188,7 +188,8 @@ export default {
         range_step: 25000,
         loading: false,
         receiversByTX: []
-      }
+      },
+      timers: {}
     }
   },
   methods: {
@@ -394,7 +395,22 @@ export default {
       this.frequencyScan = [];
       for (let scanner of scanners) {
         fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id +
-            `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`)
+            `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`).then(()=>{
+              if (this.$data.timers[scanner.id])
+                clearInterval(this.$data.timers[scanner.id]);
+              else {
+                this.$data.timers[scanner.id] = setInterval(()=>{
+                  fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id).then((d)=>{
+                    d.json().then((data)=>{
+                      if (data.state === 'Completed') {
+                        // Process Scan Data
+                        clearInterval(this.$data.timers[scanner.id]);
+                      }
+                    })
+                  })
+                }, 10000);
+              }
+        })
       }
     }
   }
