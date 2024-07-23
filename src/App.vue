@@ -44,7 +44,7 @@ export default {
     this.fetchReceivers();
     setInterval(() => {
       this.fetchMics();
-    }, 15000)
+    }, 10000)
     // Create WebSocket connection.
     this.$data.socket = new WebSocket("wss://localhost:7221/ws");
 
