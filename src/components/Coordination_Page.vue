@@ -218,26 +218,6 @@ export default {
     get_receiver: function (transmitter) {
       return this.$root.$data.receivers[this.$root.$data.receiverIndexes[transmitter.receiverID]]
     },
-    fetch_scan: function (i) {
-      fetch("https://localhost:7221/rfScan/777995160" + (i === 0 ? "?minFreq=578000000&maxFreq=638000000&stepSize=25000" : "")).then(
-          (response) => {
-            response.json().then((data) => {
-              if (data.samples.length < 1 && i < 100)
-                setTimeout(() => {
-                  this.fetch_scan(i + 1)
-                }, 1000);
-              else {
-                this.frequencyScan = data.samples.map((a) => {
-                  this.lowestFreq = Math.min(this.lowestFreq, a.frequency)
-                  this.highestFreq = Math.max(this.highestFreq, a.frequency)
-                  return {x: a.frequency, y: Math.pow(10, (a.strength / 10))}
-                });
-                this.render_chart();
-              }
-            })
-          }
-      )
-    },
     add_to_fleet: function (uid, meta_data) {
       this.fleet.push({
         managed: (uid !== ''),
