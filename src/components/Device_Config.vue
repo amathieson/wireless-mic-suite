@@ -147,7 +147,7 @@ export default {
         <ul class="inputs">
           <li>
             <label for="freq">Frequency</label>
-            <span><input v-model="config.frequency" placeholder="000.000" type="text" id="freq"> MHz</span>
+            <span><input v-bind:value="(config.frequency/1000000).toFixed(3)" v-on:change="(event)=>{config.frequency=Math.round(event.target.value*1000000)}" placeholder="000.000" type="text" id="freq"> MHz</span>
           </li>
           <li>
             <label for="group">Group</label>
@@ -164,15 +164,15 @@ export default {
         <ul class="inputs">
           <li>
             <label for="gain">Input Gain</label>
-            <span><input v-model="config.gain" placeholder="0" type="text" id="gain"> db</span>
+            <span><input v-model="config.gain" placeholder="0" type="text" id="gain"> dB</span>
           </li>
           <li>
             <label for="sens">Sensitivity</label>
-            <span><input v-model="config.sensitivity" placeholder="0" type="text" id="sens"> db</span>
+            <span><input v-model="config.sensitivity" placeholder="0" type="text" id="sens"> dB</span>
           </li>
           <li>
             <label for="outgain">Output Gain</label>
-            <span><input v-model="config.outputGain" placeholder="0" type="text" id="outgain"> db</span>
+            <span><input v-model="config.outputGain" placeholder="0" type="text" id="outgain"> dB</span>
           </li>
           <li>
             <label for="mute">Mute

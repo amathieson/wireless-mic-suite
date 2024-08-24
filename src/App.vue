@@ -8,26 +8,27 @@ import Device_Config from "./components/Device_Config.vue";
 
 <template>
   <Navbar :active_page="active_page" :back="config_active" @back="config_active = false"
-          @navigate="args => active_page = args"/>
+    @navigate="args => active_page = args" />
   <transition mode="out-in">
-    <Monitor_Page v-if="active_page === 'Monitor_Page'" @config="config"/>
+    <Monitor_Page v-if="active_page === 'Monitor_Page'" @config="config" />
   </transition>
   <transition mode="out-in">
-    <System_Page v-if="active_page === 'System_Page'" ref="coord" @config="config"/>
+    <System_Page v-if="active_page === 'System_Page'" ref="coord" @config="config" />
   </transition>
   <transition mode="out-in">
-    <Coordination_Page v-if="active_page === 'Coordination_Page'"/>
+    <Coordination_Page v-if="active_page === 'Coordination_Page'" />
   </transition>
   <transition mode="out-in" name="slide-right">
-    <Device_Config :id="device_uid" :active="config_active"
-                   :device_type="device_type" @close="config_active = false; device_uid='';device_type=null"/>
+    <Device_Config :id="device_uid" :active="config_active" :device_type="device_type"
+      @close="config_active = false; device_uid = ''; device_type = null" />
   </transition>
 </template>
 <script>
 export default {
   data: () => {
     return {
-      _endpoint: "https://localhost:7221",
+      _endpoint: "http://192.168.0.147:8080",//"https://localhost:7221",
+      _ws_endpoint: "ws://192.168.0.147:8080/ws",//"wss://localhost:7221/ws",
       config_active: false,
       active_page: "Monitor_Page",
       transmitterIndexes: {},
@@ -37,22 +38,23 @@ export default {
       receiverIndexes: {},
       device_type: null,
       device_uid: "",
+      connected: false
     }
   },
   mounted() {
     this.fetchMics();
     this.fetchReceivers();
     setInterval(() => {
-      this.fetchMics();
+        this.fetchMics();
     }, 10000)
     // Create WebSocket connection.
-    this.$data.socket = new WebSocket("wss://localhost:7221/ws");
+    this.$data.socket = new WebSocket(this.$data._ws_endpoint);
 
-// Connection opened
+    // Connection opened
     this.$data.socket.addEventListener("open", (event) => {
     });
 
-// Listen for messages
+    // Listen for messages
     this.$data.socket.addEventListener("message", (event) => {
       const data = JSON.parse(event.data);
       if (data.propertyName) {
@@ -66,7 +68,7 @@ export default {
         data.forEach(element => {
           if (this.$data.transmitterIndexes[element.uid])
             this.$data.transmitters[this.$data.transmitterIndexes[element.uid]].lastMeterData
-                = element.meteringData;
+              = element.meteringData;
           else {
             console.log("Unknown Transmitter: ", element.uid);
           }
@@ -82,7 +84,11 @@ export default {
       this.device_type = device_type;
     },
     fetchMics: function () {
-      fetch(this.$data._endpoint + "/getWirelessMics").then((response) => {
+      fetch(this.$data._endpoint + "/getWirelessMics").catch((ex) => {
+        console.log(`Failed to fetch wireless mics: ${ex}`);
+        this.$data.connected = false;
+      }).then((response) => {
+        this.$data.connected = true;
         response.json().then((data) => {
           this.$data.transmitters = data;
           for (const index in data) {
@@ -94,7 +100,11 @@ export default {
       });
     },
     fetchReceivers: function () {
-      fetch(this.$data._endpoint + "/getWirelessReceivers").then((response) => {
+      fetch(this.$data._endpoint + "/getWirelessReceivers").catch((ex) => {
+        console.log(`Failed to fetch wireless receivers: ${ex}`);
+        this.$data.connected = false;
+      }).then((response) => {
+        this.$data.connected = true;
         response.json().then((data) => {
           this.$data.receivers = data;
           for (const index in data) {

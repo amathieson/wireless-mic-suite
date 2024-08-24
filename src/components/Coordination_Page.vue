@@ -187,9 +187,10 @@ export default {
         range_end: 999_999_999_999_999,
         range_step: 25000,
         loading: false,
+        loadingProgress: 0,
+        loadingTask: null,
         receiversByTX: []
-      },
-      timers: {}
+      }
     }
   },
   methods: {
@@ -306,6 +307,7 @@ export default {
     },
     start_scan: function () {
       this.scan.loading = true
+      this.scan.loadingProgress = 0
       let scanners = [];
       this.scan.usedReceiversIDs.sort((a, b) => {
         return this.scan.receiversByTX[a].frequencyRanges[0].startFrequency -
@@ -370,27 +372,48 @@ export default {
             })
           }
           current_freq = range_end + this.scan.range_step
+        } else {
+          break;
         }
       }
       this.frequencyScan = [];
       for (let scanner of scanners) {
         fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id +
-            `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`).then(()=>{
-              if (this.$data.timers[scanner.id])
-                clearInterval(this.$data.timers[scanner.id]);
-              else {
-                this.$data.timers[scanner.id] = setInterval(()=>{
-                  fetch(this.$root.$data._endpoint + '/rfScan/' + scanner.id).then((d)=>{
-                    d.json().then((data)=>{
-                      if (data.state === 'Completed') {
-                        // Process Scan Data
-                        clearInterval(this.$data.timers[scanner.id]);
-                      }
-                    })
-                  })
-                }, 10000);
-              }
-        })
+            `?minFreq=${scanner.start}&maxFreq=${scanner.end}&stepSize=${this.scan.range_step}`)
+      }
+
+      // Wait for the scan(s) to complete...
+      if (scanners.length > 0) {
+        if (this.scan.loadingTask != null) {
+          clearInterval(this.scan.loadingTask);
+        }
+        
+        this.scan.loadingTask = setInterval(async ()=> {
+          let progress = 0;
+          let done = 0;
+          for (let scanner of scanners) {
+            let resp = await fetch(`${this.$root.$data._endpoint}/rfScan/${scanner.id}`);
+            let json = await resp.json();
+            progress += json.progress;
+            if (json.state === 'Completed' || json.state === 'Failure') {
+              done++;
+
+              this.frequencyScan.concat(json.samples.map((a) => {
+                this.lowestFreq = Math.min(this.lowestFreq, a.frequency)
+                this.highestFreq = Math.max(this.highestFreq, a.frequency)
+                return {x: a.frequency, y: Math.pow(10, (a.strength / 10))}
+              }));
+              this.render_chart();
+            }
+          }
+
+          this.scan.loadingProgress = progress / scanners.length;
+          if (done == scanners.length) {
+            this.scan.loading = false;
+            clearInterval(this.scan.loadingTask);
+            this.scan.loadingTask = null;
+          }
+        }, 500);
       }
     }
   }
@@ -400,7 +423,7 @@ export default {
 <template>
   <div class="page-container">
     <canvas ref="spectrum"></canvas>
-    <button @click="dialogue_page=0;$refs.scanner.showModal();"><span class="material-symbols-outlined">radar</span>
+    <button @click="dialogue_page=0;scan.loadingProgress=0;$refs.scanner.showModal();"><span class="material-symbols-outlined">radar</span>
       Scan Frequencies
     </button>
     <button :class="fleet.length === 0 ? 'disabled' : ''" @click=""><span class="material-symbols-outlined">pin</span>
@@ -499,6 +522,11 @@ export default {
         <div v-if="scan.loading" class="loader">
           <span class="material-symbols-outlined">radar</span>
           <h3>Scanning...</h3>
+          <div>{{ (scan.loadingProgress*100).toFixed(2) }} %</div>
+        </div>
+        <div v-else-if="scan.loadingProgress == 1">
+          <h2>🎉 Scan Completed 🎉</h2>
+          <button @click="$refs.scanner.close()">Ok</button>
         </div>
         <div v-else>
           <ul>
@@ -507,10 +535,10 @@ export default {
             <li>Step Size: {{ scan.range_step }}</li>
             <li>Optimisation: {{ scan.mode }}</li>
           </ul>
+          <button @click="start_scan">Start Scan <span
+            class="material-symbols-outlined">radar</span></button>
         </div>
       </div>
-      <button v-if="dialogue_page === 2 && !scan.loading" @click="start_scan">Start Scan <span
-          class="material-symbols-outlined">radar</span></button>
       <button v-if="dialogue_page < 2" @click="dialogue_page++">Continue <span class="material-symbols-outlined">arrow_right_alt</span>
       </button>
     </dialog>
