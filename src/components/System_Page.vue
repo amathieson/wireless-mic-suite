@@ -1,9 +1,16 @@
+<script setup>
+import { vOnLongPress } from '@vueuse/components'
+</script>
+
 <script>
 export default {
   name: "System_Page",
   data: ()=>{
     return {
-      network: {}
+      network: {},
+      selected: new Set,
+      selectionType: "",
+      suppressClick: false,
     }
   },
   emits: ['config'],
@@ -36,12 +43,36 @@ export default {
         })
         network[key].receivers.push({
           uid: rx.uid,
-          name: transmitters.map((e)=>e.name).join(' - '),
+          name: transmitters.map((e)=>e.name).join(' – '),
           transmitters
         });
       })
 
       this.network = network;
+    },
+    longPress(type, uid) {
+      if (this.selectionType === "" || this.selectionType === type) {
+        this.selected.add(uid);
+        this.selectionType = type;
+      }
+    },
+    clickItem(type, uid) {
+      if (this.suppressClick) {
+        this.suppressClick = false;
+        return;
+      }
+      if (this.selected.size === 0)
+        this.$emit('config', type, uid);
+      else {
+        if (this.selectionType === type) {
+          if (this.selected.has(uid)) {
+            this.selected.delete(uid);
+            if (this.selected.size === 0)
+              this.selectionType = "";
+          } else
+            this.selected.add(uid);
+        }
+      }
     }
   }
 }
@@ -52,9 +83,9 @@ export default {
     <details open v-for="node in network">
       <summary class="category">{{node.manufacturer}} {{node.modelName}} {{node.freqBand}}</summary>
         <details v-for="receiver in node.receivers">
-          <summary class="receiver">{{receiver.name}}<button @click="$emit('config', 'RECEIVER', receiver.uid);"><span class="material-symbols-outlined">settings</span></button></summary>
+          <summary v-on-long-press.stop="()=>{suppressClick = true; longPress('RECEIVER', receiver.uid); return false}" :data-selected="selected.has(receiver.uid)" class="receiver">{{receiver.name}}<button @click="clickItem('RECEIVER', receiver.uid);"><span class="material-symbols-outlined">settings</span></button></summary>
           <ul>
-            <li v-for="transmitter in receiver.transmitters" class="transmitter">{{ transmitter.type }} - {{transmitter.name}} <code>{{((transmitter.frequency)/1000000).toFixed(3)}} MHz</code><button @click="$emit('config', 'TRANSMITTER', transmitter.uid);"><span class="material-symbols-outlined">settings</span></button></li>
+            <li v-on-long-press.stop="()=>{suppressClick = true; longPress('TRANSMITTER', transmitter.uid); return false}" :data-selected="selected.has(transmitter.uid)" @click="clickItem('TRANSMITTER', transmitter.uid)" v-for="transmitter in receiver.transmitters" class="transmitter">{{ transmitter.type }} &ndash; {{transmitter.name}} <code>{{((transmitter.frequency)/1000000).toFixed(3)}} MHz</code></li>
           </ul>
         </details>
     </details>
@@ -78,6 +109,9 @@ button {
   }
 
 }
+[data-selected]:not([data-selected="false"]) {
+  color: var(--primary-300);
+}
 .page-container {
   display: block;
   text-align: left;
@@ -86,24 +120,26 @@ summary {
   background: var(--dark-500);
   padding: 0.5em 1em;
   font-weight: 800;
-  border-bottom: 2px solid var(--text-200);
+  border-bottom: 1px solid var(--text-200);
   transition: background 250ms ease;
   display: flex;
   gap: 0.5em;
   cursor: pointer;
   align-items: center;
 }
-summary:hover {
+summary:hover, .transmitter:hover {
   background: var(--dark-200);
+  cursor: pointer;
 }
 .receiver {
+  font-weight: 400;
   margin-left: 2em;
   list-style: none;
 }
 .transmitter {
   display: flex;
   padding: 0.5em 1em;
-  border-bottom: 2px solid var(--text-200);
+  border-bottom: 1px solid var(--text-200);
   gap: 0.5em;
   background: var(--dark-500);
   transition: background 250ms ease;
@@ -131,9 +167,11 @@ summary::before, .transmitter::before {
 }
 .receiver::before {
   content: 'dns' !important;
+  opacity: 0.65;
 }
 .transmitter::before {
   content: 'mic' !important;
+  opacity: 0.65;
 }
 ul {
   margin: 0.5em 0 0.5em 1em;

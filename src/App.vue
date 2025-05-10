@@ -9,15 +9,15 @@ import Device_Config from "./components/Device_Config.vue";
 <template>
   <Navbar :active_page="active_page" :back="config_active" @back="config_active = false"
     @navigate="args => active_page = args" />
-  <transition mode="out-in">
+<!--  <transition mode="out-in">-->
     <Monitor_Page v-if="active_page === 'Monitor_Page'" @config="config" />
-  </transition>
-  <transition mode="out-in">
+<!--  </transition>-->
+<!--  <transition mode="out-in">-->
     <System_Page v-if="active_page === 'System_Page'" ref="coord" @config="config" />
-  </transition>
-  <transition mode="out-in">
+<!--  </transition>-->
+<!--  <transition mode="out-in">-->
     <Coordination_Page v-if="active_page === 'Coordination_Page'" />
-  </transition>
+<!--  </transition>-->
   <transition mode="out-in" name="slide-right">
     <Device_Config :id="device_uid" :active="config_active" :device_type="device_type"
       @close="config_active = false; device_uid = ''; device_type = null" />
@@ -27,8 +27,8 @@ import Device_Config from "./components/Device_Config.vue";
 export default {
   data: () => {
     return {
-      _endpoint: "http://192.168.0.147:8080",//"https://localhost:7221",
-      _ws_endpoint: "ws://192.168.0.147:8080/ws",//"wss://localhost:7221/ws",
+      _endpoint: "https://localhost:7221",//"https://localhost:7221",
+      _ws_endpoint: "wss://localhost:7221/ws",//"wss://localhost:7221/ws",
       config_active: false,
       active_page: "Monitor_Page",
       transmitterIndexes: {},
@@ -62,8 +62,8 @@ export default {
           this.$data.transmitters[this.$data.transmitterIndexes[data.uid]] = {};
         }
         this.$data.transmitters[this.$data.transmitterIndexes[data.uid]][data.propertyName] = data.value;
-        if (this.$refs.coord)
-          this.$refs.coord.updateNetwork();
+        // if (this.$refs.coord)
+          // this.$refs.coord.updateNetwork();
       } else {
         data.forEach(element => {
           if (this.$data.transmitterIndexes[element.uid])
