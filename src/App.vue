@@ -31,8 +31,8 @@ let config_active = ref(false);
 export default {
   data: () => {
     return {
-      _endpoint: "https://localhost:7221",//"https://localhost:7221",
-      _ws_endpoint: "wss://localhost:7221/ws",//"wss://localhost:7221/ws",
+      _endpoint: "https://localhost:7221",
+      _ws_endpoint: "wss://localhost:7221/ws",
       transmitterIndexes: {},
       transmitters: [],
       socket: null,

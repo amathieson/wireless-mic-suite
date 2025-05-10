@@ -21,7 +21,10 @@ export default {
     <div class="transmitters">
       <div class="transmitter" v-for="transmitter in $root.$data.transmitters"
         @click="$emit('config', 'TRANSMITTER', transmitter.uid);"
-        :class="{ 'online': transmitter.transmitterType !== 'UNKNOWN' && transmitter.transmitterType !== null }">
+        :class="{ 'online': transmitter.transmitterType !== 'UNKNOWN' && transmitter.transmitterType !== null }"
+         :data-warning="transmitter.batteryLevel < 0.4"
+         :data-danger="transmitter.batteryLevel < 0.25"
+      >
         <h1>{{ computeName(transmitter.name)[1] }}</h1>
         <div class="level AF"><span class="material-symbols-outlined">graphic_eq</span> <span class="bullet"
             v-for="j in 10" :data-active="j <= (transmitter.lastMeterData?.audioLevel * 10)"></span></div>
@@ -53,6 +56,7 @@ export default {
 
 <style scoped>
 .transmitter {
+  cursor: pointer;
   opacity: 0.5;
   background-color: #80808018;
   padding: 0.25em 0.5em;
@@ -69,7 +73,7 @@ export default {
     "a d c"
     "a e c"
     "a h c";
-
+  transition: border 250ms ease;
   &>h1 {
     font-size: 1em;
     margin: 0;
@@ -195,13 +199,29 @@ export default {
   font-weight: 600;
   margin: 20px;
 }
-
+.transmitter[data-warning="true"] {
+  color: black;
+  background: #e8852e;
+  border: transparent;
+  h1 {
+    border-color: black;
+  }
+}
+.transmitter[data-danger="true"] {
+  background: #b83535;
+  border: transparent;
+  color: white;
+  h1 {
+    border-color: var(--text-200);
+  }
+}
 .transmitters {
   float: left;
   display: grid;
   gap: 0.7em;
   grid-template-columns: auto auto auto auto auto;
   justify-content: space-evenly;
+  align-items: center;
 }
 
 @media screen and (width < 1500px) {
