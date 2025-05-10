@@ -83,7 +83,7 @@ export default {
     <details open v-for="node in network">
       <summary class="category">{{node.manufacturer}} {{node.modelName}} {{node.freqBand}}</summary>
         <details v-for="receiver in node.receivers">
-          <summary v-on-long-press.stop="()=>{suppressClick = true; longPress('RECEIVER', receiver.uid); return false}" :data-selected="selected.has(receiver.uid)" class="receiver">{{receiver.name}}<button @click="clickItem('RECEIVER', receiver.uid);"><span class="material-symbols-outlined">settings</span></button></summary>
+          <summary v-on-long-press.stop="()=>{suppressClick = true; longPress('RECEIVER', receiver.uid); return false}" :data-selected="selected.has(receiver.uid)" class="receiver" @click="clickItem('RECEIVER', receiver.uid);"><button @click.stop="(e)=>{e.target.parentElement.parentElement.parentElement.toggleAttribute('open')}"><span class="material-symbols-outlined">arrow_right</span></button>{{receiver.name}}</summary>
           <ul>
             <li v-on-long-press.stop="()=>{suppressClick = true; longPress('TRANSMITTER', transmitter.uid); return false}" :data-selected="selected.has(transmitter.uid)" @click="clickItem('TRANSMITTER', transmitter.uid)" v-for="transmitter in receiver.transmitters" class="transmitter">{{ transmitter.type }} &ndash; {{transmitter.name}} <code>{{((transmitter.frequency)/1000000).toFixed(3)}} MHz</code></li>
           </ul>
@@ -140,7 +140,7 @@ summary:hover, .transmitter:hover {
   display: flex;
   padding: 0.5em 1em;
   border-bottom: 1px solid var(--text-200);
-  gap: 0.5em;
+  gap: 0.75em;
   background: var(--dark-500);
   transition: background 250ms ease;
   align-items: center;

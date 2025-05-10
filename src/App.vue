@@ -24,13 +24,15 @@ import Device_Config from "./components/Device_Config.vue";
   </transition>
 </template>
 <script>
+import {ref} from "vue";
+
+let active_page = ref("Monitor_Page");
+let config_active = ref(false);
 export default {
   data: () => {
     return {
       _endpoint: "https://localhost:7221",//"https://localhost:7221",
       _ws_endpoint: "wss://localhost:7221/ws",//"wss://localhost:7221/ws",
-      config_active: false,
-      active_page: "Monitor_Page",
       transmitterIndexes: {},
       transmitters: [],
       socket: null,
@@ -38,7 +40,7 @@ export default {
       receiverIndexes: {},
       device_type: null,
       device_uid: "",
-      connected: false
+      connected: false,
     }
   },
   mounted() {
@@ -79,9 +81,10 @@ export default {
   },
   methods: {
     config: function (device_type, uid) {
-      this.config_active = true;
+      config_active.value = true;
       this.device_uid = uid;
       this.device_type = device_type;
+      history.pushState("config", "");
     },
     fetchMics: function () {
       fetch(this.$data._endpoint + "/getWirelessMics").catch((ex) => {
@@ -115,7 +118,19 @@ export default {
         });
       });
     }
+  },
+  watch: {
+    active_page: function (val) {
+      history.pushState(val, "");
+    }
   }
 }
+history.pushState("Monitor_Page", "");
+addEventListener("popstate", (event) => {
+  if (event.state) {
+    active_page.value = event.state;
+    config_active.value = false;
+  }
+})
 
 </script>

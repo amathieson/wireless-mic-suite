@@ -2,12 +2,12 @@
   <div class="nav-bar">
     <img class="wide-only" src="/GAOS-logo-light-small.png" alt="GAOS">
     <img class="narrow-only" v-if="!$props.back" src="/GAOS-logo-light-small.png" alt="GAOS">
-    <a class="narrow-only" v-else href="#" @click="$emit('back')"><span class="material-symbols-outlined">arrow_back</span></a>
-    <h1 class="narrow-only">Monitor</h1>
+    <a class="narrow-only" v-else @click="$emit('back')"><span class="material-symbols-outlined">arrow_back</span></a>
+    <h1 class="narrow-only">{{$props.active_page.split("_")[0]}}</h1>
     <a class="wide-only" :data-active="$props.active_page==='Monitor_Page'" @click="$emit('navigate', 'Monitor_Page')"><span class="material-symbols-outlined">monitoring</span> Monitor</a>
     <a class="wide-only" :data-active="$props.active_page==='System_Page'" @click="$emit('navigate', 'System_Page')"><span class="material-symbols-outlined">dns</span> Wireless System</a>
     <a class="wide-only" :data-active="$props.active_page==='Coordination_Page'" @click="$emit('navigate', 'Coordination_Page')"><span class="material-symbols-outlined">network_check</span> Coordination </a>
-    <a class="narrow-only menu-button" href="#" @click="open = !open"><span class="material-symbols-outlined">menu</span></a>
+    <a class="narrow-only menu-button" @click="open = !open"><span class="material-symbols-outlined">menu</span></a>
     <transition mode="out-in" name="slide-down">
       <div class="narrow-only menu" v-if="open" @click.passive="open = !open">
         <a :data-active="$props.active_page==='Monitor_Page'" @click="$emit('navigate', 'Monitor_Page')"><span class="material-symbols-outlined">monitoring</span> Monitor</a>
